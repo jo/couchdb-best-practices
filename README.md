@@ -25,7 +25,7 @@ document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
 document id knowledge.
 
 ## Do not emit entire docs
-You can query a view with `include_docs`. Then in the view result every row has
+You can query a view with `include_docs=true`. Then in the view result every row has
 the whole doc included:
 ```json
 {
