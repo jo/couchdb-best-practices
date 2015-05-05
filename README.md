@@ -39,8 +39,18 @@ Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
 PouchDB plugin to help with migrations.
 
 ## Proxy
-Running CouchDB behind a proxy is recommended, iA. to handle ssl termination.
-*Prefer subdomain over subdirectory*. At least nginx has problems to proxy a
-CouchDB on a subdirectory.
+Running CouchDB behind a proxy is recommended, eg. to handle ssl termination.
+
+*Prefer subdomain over subdirectory*.  Nginx encodes urls on the way through.
+So, for example, if you request
+`http://my.couch.behind.nginx.com/mydb/foo%2Fbar` it gets routed to CouchDB as
+`/mydb/foo/bar`, which is not what we want.
+
+We can configure this mad behaviour away (by [not appending a slash to the
+`proxy_pass`
+target[(http://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds)).
+But there is no way to convince nginx not messing with the url when rewriting
+the proxy behind a subdirectory, eg
+`http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
 
 
