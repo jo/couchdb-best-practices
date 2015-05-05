@@ -24,6 +24,30 @@ When splitting documents into different subdocuments I often include the parent
 document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
 document id knowledge.
 
+## Do not emit entire docs
+You can query a view with `include_docs`. Then in the view result every row has
+the whole doc included:
+```json
+{
+  "rows": [
+    {
+      "id": "mydoc",
+      "key": "mydoc",
+      "value": null,
+      "doc": {
+        "_id": "mydoc",
+        "_rev": "1-asd",
+        "foo": "bar"
+      }
+    }
+  ]
+}
+```
+This has no disadvantages performance wise, at least on PouchDB. For CouchDB it
+means additional lookups and prevents CouchDB from directly streaming the view
+result from disk. But this is negligible. So don't emit the whole doc unless you
+need the last bit of performance.
+
 ## CouchDB Merge Conflicts
 Some things need to and should be conflicts. CouchDB *conflicts are first class
 citicens*, (or at least [should be treaded
