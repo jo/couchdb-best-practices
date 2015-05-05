@@ -48,6 +48,12 @@ means additional lookups and prevents CouchDB from directly streaming the view
 result from disk. But this is negligible. So don't emit the whole doc unless you
 need the last bit of performance.
 
+## Filtered Replication
+Filtered replication is a great way limit the amount of data synchronized on a
+device. But be aware that replication filters other than `_doc_ids` are very slow,
+because they run on *every* document. Consider writing those filter functions in
+Erlang.
+
 ## CouchDB Merge Conflicts
 Some things need to and should be conflicts. CouchDB *conflicts are first class
 citicens*, (or at least [should be treaded
