@@ -84,3 +84,60 @@ the proxy behind a subdirectory, eg
 `http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
 
 
+## How do I do SQL-like JOINs? Can I avoid them?
+CouchDB (and PouchDB) supports [linked
+documents](https://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Linked_documents).
+Use them to join two types of documents together, by simply adding an `_id` to the
+emitted value:
+```js
+function map(doc) {
+  // join artist data to albums
+  if (doc.type === 'album') {
+    emit([doc._id, 'album'], null)
+    emit([doc._id, 'artist'], { _id : doc.artistId })
+  }
+}
+// query an album
+db.query(map, {
+  key: 'hunkydory',
+  include_docs: true
+})
+```
+And this is a result:
+```json
+{
+  "rows": [
+    {
+      "doc": {
+        "_id": "hunkydory",
+        "title": "Hunky Dory",
+        "year": 1971
+      },
+      "id": "hunkydory",
+      "key": [
+        "hunkydory",
+        "album"
+      ],
+      "value": {
+        "_id": "bowie"
+      }
+    }
+    {
+      "doc": {
+        "_id": "bowie",
+        "firstName": "David",
+        "lastName": "Bowie"
+      },
+      "id": "hunkydory",
+      "key": [
+        "hunkydory",
+        "artist"
+      ],
+      "value": {
+        "_id": "bowie"
+      }
+    }
+  ]
+}
+```
+Using linked documents can be a way to group together related data.
