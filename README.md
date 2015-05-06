@@ -182,6 +182,17 @@ For example:
 }
 ```
 
-## How to debug PouchDB
+## How to debug PouchDB?
 I often assign the database instance to window and then I run queries on it.
 Or you can replicate to a local CouchDB and debug your views there.
+
+## How can I reset my CouchDB user password?
+Since CouchDB 1.2 updating the user password has become much easyer:
+
+1. Request the user doc: `GET /_users/org.couchdb.user:a-username`
+2. Set a `password` property with the password
+3. Save the doc
+
+Use the [User authentication plugin for PouchDB and
+CouchDB](https://github.com/nolanlawson/pouchdb-authentication).
+
