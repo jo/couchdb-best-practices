@@ -141,3 +141,40 @@ And this is a result:
 }
 ```
 Using linked documents can be a way to group together related data.
+
+
+## CouchDB Built in Reduce Function
+CouchDB has some build in reduce functions to accomplish common tasks. They are
+native and very performant. Choose them wherever possible.
+To use a built in reduce, insert the name string instead of the function code,
+eg
+```json
+{
+  "views": {
+    "myview": {
+      "map": "function(doc) { emit(doc._id, 1) }",
+      "reduce": "_stats"
+    }
+  }
+}
+```
+
+### `_sum`
+Adds up the emitted values, which must be numbers.
+
+### `_count`
+Counts the number of emitted values.
+
+### `_stats`
+Calculates some numerical statistics on your emitted values, which must be
+numbers.
+For example:
+```json
+{
+  "sum": 80,
+  "count": 20,
+  "min": 1,
+  "max": 100,
+  "sumsqr": 30
+}
+```
