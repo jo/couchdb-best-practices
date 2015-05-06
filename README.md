@@ -181,3 +181,7 @@ For example:
   "sumsqr": 30
 }
 ```
+
+## How to debug PouchDB
+I often assign the database instance to window and then I run queries on it.
+Or you can replicate to a local CouchDB and debug your views there.
