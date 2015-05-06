@@ -1,6 +1,9 @@
 # CouchDB Best Practices
 Collect best practices around the CouchDB universe.
 
+**:warning: Currently this document is in a structure less collection mode,
+sort of append only.**
+
 ## Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
 document’. This is not according to CouchDB best practice. *Split data into many
