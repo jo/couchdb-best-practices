@@ -22,6 +22,7 @@ Collect best practices around the CouchDB universe.
 * [Change Password](#change-password)
 * [PouchDB and AngularJS](#pouchdb-and-angularjs)
 * [Full Text Search](#full-text-search)
+* [Using Replication](#using-replication)
 
 
 ## Creating Admin User
@@ -365,3 +366,15 @@ On a CouchDB server you have options: Lucene (via
 [couchdb-lucene](http://github.com/rnewson/couchdb-lucene)) or ElasticSearch via
 [The River](https://www.elastic.co/blog/the-river/). At eHealth Africa we use
 the latter.
+
+
+## Using Replication
+There are two ways to start a replication: the `_replicator` database and the
+`_replicate` API endpoint.
+
+### `_replicate` API endpoint
+When you use Futon you use the replicator endpoint.
+
+### `_replicator` Database
+Replications created via the `_replicator` database are persisted and survive a
+server restart.
