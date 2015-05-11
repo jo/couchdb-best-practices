@@ -16,6 +16,7 @@ Collect best practices around the CouchDB universe.
 * [Debugging Views](#debugging-views)
 * [Testing Views](#testing-views)
 * [Change Password](#change-password)
+* [PouchDB and AngularJS](#pouchdb-and-angularjs)
 
 ## Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
@@ -237,3 +238,8 @@ Since CouchDB 1.2 updating the user password has become much easyer:
 Use the [User authentication plugin for PouchDB and
 CouchDB](https://github.com/nolanlawson/pouchdb-authentication).
 
+
+## PouchDB and AngularJS
+To use PouchDB with AngularJS you should use
+[angular-pouchdb](https://github.com/angular-pouchdb/angular-pouchdb), which
+wraps PouchDBs promises with Angulars `$q`s.
