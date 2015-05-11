@@ -186,6 +186,13 @@ For example:
 I often assign the database instance to window and then I run queries on it.
 Or you can replicate to a local CouchDB and debug your views there.
 
+If you like PouchDB to be more verbose, [enable debug
+output](http://pouchdb.com/api.html#debug_mode):
+```js
+PouchDB.debug.enable('*')
+```
+
+
 ## How can I reset my CouchDB user password?
 Since CouchDB 1.2 updating the user password has become much easyer:
 
