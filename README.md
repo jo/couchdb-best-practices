@@ -198,6 +198,21 @@ By using [couchdb-view-tester](https://github.com/gr2m/couchdb-view-tester) you
 can write view code in your preferred editor and watch the results in real time.
 
 
+## How can I test my views?
+Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a a simple
+CouchDB design doc testing tool.
+```js
+var DDocTest = require('couchdb-ddoc-test')
+var test = new DDocTest({
+    fixture: {a: 1},
+      src: 'path/to/map.js'
+})
+var result = test.runMap()
+
+assert.equals(result, fixture)
+```
+
+
 ## How can I reset my CouchDB user password?
 Since CouchDB 1.2 updating the user password has become much easyer:
 
