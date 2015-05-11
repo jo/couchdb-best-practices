@@ -3,6 +3,8 @@ Collect best practices around the CouchDB universe.
 
 **:warning: Currently this document is in a structure less, append only.**
 
+* [Creating Admin User](#creating-admin-user)
+* [Creating User](#creating-user)
 * [Document Modeling To Avoid Conflicts](#document-modeling-to-avoid-conflicts)
 * [Your Document ID Is The Best Index](#your-document-id-is-the-best-index)
 * [Do Not Emit Entire Docs](#do-not-emit-entire-docs)
@@ -17,6 +19,29 @@ Collect best practices around the CouchDB universe.
 * [Testing Views](#testing-views)
 * [Change Password](#change-password)
 * [PouchDB and AngularJS](#pouchdb-and-angularjs)
+
+
+## Creating Admin User
+First thing to do is setup the user accout
+
+* Go to [http://localhost:5984/_utils/](http://localhost:5984/_utils) in your
+* web browser
+* Click on `Setup more admins` in the bottom right hand corner of the sidebar
+* Enter a username + password (this will be the root admin of your CouchDB)
+* Click on `Logout` which is also in bottom right had corner
+
+Great, now you've configured your Admin User. However, you don't want to
+actually use this account to do things, so proceed!
+
+
+## Creating User
+To create a non admin user, follow these steps:
+
+* While still on `http://localhost:5984/_utils/` in your browser (and logged
+* out)
+* Click on `Signup` in the bottom right of the sidebar
+* Enter username + password
+
 
 ## Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
