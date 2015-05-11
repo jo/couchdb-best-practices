@@ -192,6 +192,11 @@ output](http://pouchdb.com/api.html#debug_mode):
 PouchDB.debug.enable('*')
 ```
 
+## How to debug a view?
+View debugging can be a pain when you're restricted to Futon or even Fauxton.
+By using [couchdb-view-tester](https://github.com/gr2m/couchdb-view-tester) you
+can write view code in your preferred editor and watch the results in real time.
+
 
 ## How can I reset my CouchDB user password?
 Since CouchDB 1.2 updating the user password has become much easyer:
