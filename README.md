@@ -5,18 +5,18 @@ Collect best practices around the CouchDB universe.
 sort of append only.**
 
 * [Document Modeling To Avoid Conflicts](https://github.com/eHealthAfrica/couchdb-best-practices#document-modeling-to-avoid-conflicts)
-* [Your Document ID Is The Best Index]()
-* [Do Not Emit Entire Docs]()
-* [Filtered Replication]()
-* [Conflict Handling]()
-* [Data Migrations]()
-* [CouchDB Behind A Proxy]()
-* [Linked Documents]()
-* [Built-In Reduce Functions]()
-* [Debugging PouchDB]()
-* [Debugging Views]()
-* [Testing Views]()
-* [Change Password]()
+* [Your Document ID Is The Best Index](https://github.com/eHealthAfrica/couchdb-best-practices#your-document-id-is-the-best-index)
+* [Do Not Emit Entire Docs](https://github.com/eHealthAfrica/couchdb-best-practices#do-not-emit-entire-docs)
+* [Filtered Replication](https://github.com/eHealthAfrica/couchdb-best-practices#filtered-replication)
+* [Conflict Handling](https://github.com/eHealthAfrica/couchdb-best-practices#conflict-handling)
+* [Data Migrations](https://github.com/eHealthAfrica/couchdb-best-practices#document-modeling-to-avoid-conflicts://github.com/eHealthAfrica/couchdb-best-practices#data-migrations)
+* [CouchDB Behind A Proxy](https://github.com/eHealthAfrica/couchdb-best-practices#couchdb-behind-a-proxy)
+* [Linked Documents](https://github.com/eHealthAfrica/couchdb-best-practices#linked-documents)
+* [Built-In Reduce Functions](https://github.com/eHealthAfrica/couchdb-best-practices#built-in-reduce-functions)
+* [Debugging PouchDB](https://github.com/eHealthAfrica/couchdb-best-practices#debugging-pouchdb)
+* [Debugging Views](https://github.com/eHealthAfrica/couchdb-best-practices#debugging-views)
+* [Testing Views](https://github.com/eHealthAfrica/couchdb-best-practices#testing-views)
+* [Change Password](https://github.com/eHealthAfrica/couchdb-best-practices#change-password)
 
 ## Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
