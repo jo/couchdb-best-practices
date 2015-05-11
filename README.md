@@ -332,8 +332,10 @@ Since CouchDB 1.2 updating the user password has become much easyer:
 2. Set a `password` property with the password
 3. Save the doc
 
-Use the [User authentication plugin for PouchDB and
-CouchDB](https://github.com/nolanlawson/pouchdb-authentication).
+The [User authentication plugin for PouchDB and
+CouchDB](https://github.com/nolanlawson/pouchdb-authentication) provides a
+[`changePassword`](https://github.com/nolanlawson/pouchdb-authentication#user-content-dbchangepasswordusername-password--opts-callback)
+function for your convenience.
 
 
 ## PouchDB and AngularJS
