@@ -278,6 +278,53 @@ There is also a handy Grunt task,
 into the Grunt toolchain.
 
 
+## Modularize View Code
+While you work with views at some point you might want to share code between
+views or simply break your code into smaller modules. For that purpose CouchDB
+has [support for CommonJS
+modules](http://docs.couchdb.org/en/1.6.1/query-server/javascript.html?highlight=commonjs#commonjs-modules),
+which you know from node.
+
+Take this example:
+```js
+{
+  views: {
+    lib: {
+      {
+        person: function(doc) {
+          if (doc._id.match(/^person\//)) return
+          return {
+            name: doc.firstname + ' ' + doc.lastname,
+            createdAt: Date.parse(doc.created_at)
+          }
+        }
+      }
+    },
+    'people-by-name': {
+      map: function(doc) {
+        var person = require('views/lib/person')(doc)
+        if (!person) return
+        emit(person.name, null)
+      },
+      reduce: '_count'
+    },
+    'people-by-created-at': {
+      map: function(doc) {
+        var person = require('views/lib/person')(doc)
+        if (!person) return
+        emit(person.createdAt.getTime(), null)
+      },
+      reduce: '_count'
+    }
+  }
+}
+```
+CommonJS modules can also be used for shows, lists and validate\_doc\_update
+functions.
+Note that the `person` module is inside the `views` object. This is needed for
+CouchDB in order to detect changes on the view code.
+
+
 ## Change Password
 Since CouchDB 1.2 updating the user password has become much easyer:
 
