@@ -17,6 +17,7 @@ Collect best practices around the CouchDB universe.
 * [Debugging PouchDB](#debugging-pouchdb)
 * [Debugging Views](#debugging-views)
 * [Testing Views](#testing-views)
+* [Deploying Views](#deploying-views)
 * [Change Password](#change-password)
 * [PouchDB and AngularJS](#pouchdb-and-angularjs)
 * [Full Text Search](#full-text-search)
@@ -67,6 +68,7 @@ When splitting documents into different subdocuments I often include the parent
 document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
 document id knowledge.
 
+
 ## Do Not Emit Entire Docs
 You can query a view with `include_docs=true`. Then in the view result every row has
 the whole doc included:
@@ -97,6 +99,7 @@ device. But be aware that replication filters other than `_doc_ids` are very slo
 because they run on *every* document. Consider writing those filter functions in
 Erlang.
 
+
 ## Conflict Handling
 Some things need to and should be conflicts. CouchDB *conflicts are first class
 citicens*, (or at least [should be treaded
@@ -107,9 +110,11 @@ resolution daemon running on the server. While we don’t have this at the momen
 look at the
 [pouch-resolve-conflicts](https://github.com/jo/pouch-resolve-conflicts) plugin.
 
+
 ## Data Migrations
 Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
 PouchDB plugin to help with migrations.
+
 
 ## CouchDB Behind A Proxy
 Running CouchDB behind a proxy is recommended, eg. to handle ssl termination.
@@ -233,6 +238,7 @@ output](http://pouchdb.com/api.html#debug_mode):
 PouchDB.debug.enable('*')
 ```
 
+
 ## Debugging Views
 View debugging can be a pain when you're restricted to Futon or even Fauxton.
 By using [couchdb-view-tester](https://github.com/gr2m/couchdb-view-tester) you
@@ -252,6 +258,24 @@ var result = test.runMap()
 
 assert.equals(result, fixture)
 ```
+
+
+## Deploying Views
+You want to keep your view code in VCS. Now you need a way to install the view
+function. You can use the [Python Couchapp
+Tool](https://github.com/couchapp/couchapp). Its a CLI which reads a directory,
+compiles documents from it and saves the documents in a CouchDB.
+Since this is a common task a quasi standard for the directory layout has been
+emerged, which is supported by a range of compatible tools.
+For integration in JavaScript projects using a tool written in JavaScript avoids
+additional dependencies. I wrote
+[couch-compile](https://github.com/jo/couch-compile) for that purpose. It reads
+a directory, JSON file or node module and converts it into a CouchDB document,
+which can be deployed to a CouchDB database with
+[couch-push](https://github.com/jo/couch-push).
+There is also a handy Grunt task,
+[grunt-couch](https://github.com/jo/grunt-couch) which integrates both projects
+into the Grunt toolchain.
 
 
 ## Change Password
