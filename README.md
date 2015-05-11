@@ -285,6 +285,9 @@ views or simply break your code into smaller modules. For that purpose CouchDB
 has [support for CommonJS
 modules](http://docs.couchdb.org/en/1.6.1/query-server/javascript.html?highlight=commonjs#commonjs-modules),
 which you know from node.
+CouchDB implements [CommonJS 1.1](http://wiki.commonjs.org/wiki/Modules/1.1).
+Please keep the version in mind. Some features are not supported, for example
+the assignment of a function, like `module.exports = function() {}`.
 
 Take this example:
 ```js
