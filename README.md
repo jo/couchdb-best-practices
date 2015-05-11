@@ -4,6 +4,20 @@ Collect best practices around the CouchDB universe.
 **:warning: Currently this document is in a structure less collection mode,
 sort of append only.**
 
+* [Document Modeling To Avoid Conflicts](https://github.com/eHealthAfrica/couchdb-best-practices#document-modeling-to-avoid-conflicts)
+* [Your Document ID Is The Best Index]()
+* [Do Not Emit Entire Docs]()
+* [Filtered Replication]()
+* [Conflict Handling]()
+* [Data Migrations]()
+* [CouchDB Behind A Proxy]()
+* [Linked Documents]()
+* [Built-In Reduce Functions]()
+* [Debugging PouchDB]()
+* [Debugging Views]()
+* [Testing Views]()
+* [Change Password]()
+
 ## Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
 document’. This is not according to CouchDB best practice. *Split data into many
@@ -15,7 +29,7 @@ changes*. Data that changes together, belongs in a document. Modelling documents
 this way a) avoids conflicts and b) keeps the number of revisions low, which
 improves replication performance and uses less storage.
 
-## Your document ID is the best index
+## Your Document ID is the Best Index
 Before deciding on using a random value as doc `_id`, read the section [When not
 to use map
 reduce](http://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html)
@@ -27,7 +41,7 @@ When splitting documents into different subdocuments I often include the parent
 document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
 document id knowledge.
 
-## Do not emit entire docs
+## Do Not Emit Entire Docs
 You can query a view with `include_docs=true`. Then in the view result every row has
 the whole doc included:
 ```json
@@ -57,7 +71,7 @@ device. But be aware that replication filters other than `_doc_ids` are very slo
 because they run on *every* document. Consider writing those filter functions in
 Erlang.
 
-## CouchDB Merge Conflicts
+## Conflict Handling
 Some things need to and should be conflicts. CouchDB *conflicts are first class
 citicens*, (or at least [should be treaded
 so](https://gist.github.com/rnewson/2387973#file-gistfile1-txt-L6)). If 2
@@ -71,7 +85,7 @@ look at the
 Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
 PouchDB plugin to help with migrations.
 
-## Proxy
+## CouchDB Behind A Proxy
 Running CouchDB behind a proxy is recommended, eg. to handle ssl termination.
 
 *Prefer subdomain over subdirectory*.  Nginx encodes urls on the way through.
@@ -87,7 +101,8 @@ the proxy behind a subdirectory, eg
 `http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
 
 
-## How do I do SQL-like JOINs? Can I avoid them?
+## Linked Documents
+Or How do I do SQL-like JOINs? Can I avoid them?
 CouchDB (and PouchDB) supports [linked
 documents](https://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Linked_documents).
 Use them to join two types of documents together, by simply adding an `_id` to the
@@ -146,7 +161,7 @@ And this is a result:
 Using linked documents can be a way to group together related data.
 
 
-## CouchDB Built in Reduce Function
+## Built-In Reduce Functions
 CouchDB has some build in reduce functions to accomplish common tasks. They are
 native and very performant. Choose them wherever possible.
 To use a built in reduce, insert the name string instead of the function code,
@@ -182,7 +197,7 @@ For example:
 }
 ```
 
-## How to debug PouchDB?
+## Debugging PouchDB
 I often assign the database instance to window and then I run queries on it.
 Or you can replicate to a local CouchDB and debug your views there.
 
@@ -192,13 +207,13 @@ output](http://pouchdb.com/api.html#debug_mode):
 PouchDB.debug.enable('*')
 ```
 
-## How to debug a view?
+## Debugging Views
 View debugging can be a pain when you're restricted to Futon or even Fauxton.
 By using [couchdb-view-tester](https://github.com/gr2m/couchdb-view-tester) you
 can write view code in your preferred editor and watch the results in real time.
 
 
-## How can I test my views?
+## Testing Views
 Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a a simple
 CouchDB design doc testing tool.
 ```js
@@ -213,7 +228,7 @@ assert.equals(result, fixture)
 ```
 
 
-## How can I reset my CouchDB user password?
+## Change Password
 Since CouchDB 1.2 updating the user password has become much easyer:
 
 1. Request the user doc: `GET /_users/org.couchdb.user:a-username`
