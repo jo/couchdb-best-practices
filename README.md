@@ -292,18 +292,20 @@ Take this example:
   views: {
     lib: {
       {
-        person: function(doc) {
-          if (!doc._id.match(/^person\//)) return
-          return {
-            name: doc.firstname + ' ' + doc.lastname,
-            createdAt: Date.parse(doc.created_at)
-          }
-        }
+        models: "                                   \
+          exports.person = function(doc) {           \
+            if (!doc._id.match(/^person\//)) return   \
+            return {                                   \
+              name: doc.firstname + ' ' + doc.lastname, \
+              createdAt: Date.parse(doc.created_at)      \
+            }                                             \
+          }                                                \
+        "
       }
     },
     'people-by-name': {
       map: function(doc) {
-        var person = require('views/lib/person')(doc)
+        var person = require('views/lib/models').person(doc)
         if (!person) return
         emit(person.name, null)
       },
@@ -311,7 +313,7 @@ Take this example:
     },
     'people-by-created-at': {
       map: function(doc) {
-        var person = require('views/lib/person')(doc)
+        var person = require('views/lib/models').person(doc)
         if (!person) return
         emit(person.createdAt.getTime(), null)
       },
