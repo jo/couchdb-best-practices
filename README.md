@@ -18,6 +18,7 @@ Collect best practices around the CouchDB universe.
 * [Debugging Views](#debugging-views)
 * [Testing Views](#testing-views)
 * [Deploying Views](#deploying-views)
+* [Modularize View Code](#modularize-view-code)
 * [Change Password](#change-password)
 * [PouchDB and AngularJS](#pouchdb-and-angularjs)
 * [Full Text Search](#full-text-search)
