@@ -19,6 +19,7 @@ Collect best practices around the CouchDB universe.
 * [Testing Views](#testing-views)
 * [Change Password](#change-password)
 * [PouchDB and AngularJS](#pouchdb-and-angularjs)
+* [Full Text Search](#full-text-search)
 
 
 ## Creating Admin User
@@ -268,3 +269,19 @@ CouchDB](https://github.com/nolanlawson/pouchdb-authentication).
 To use PouchDB with AngularJS you should use
 [angular-pouchdb](https://github.com/angular-pouchdb/angular-pouchdb), which
 wraps PouchDBs promises with Angulars `$q`s.
+
+
+## Full Text Search
+While basic full text search is possible just by using views, its not
+convenient and you should make use of a dedicated FTI.
+
+### Client Side
+For PouchDB the situation is clear: Use [PouchDB Quick
+Search](https://github.com/nolanlawson/pouchdb-quick-search). Its a PouchDB
+plugin based on [lunr.js](http://lunrjs.com/).
+
+### Server Side
+On a CouchDB server you have options: Lucene (via
+[couchdb-lucene](http://github.com/rnewson/couchdb-lucene)) or ElasticSearch via
+[The River](https://www.elastic.co/blog/the-river/). At eHealth Africa we use
+the latter.
