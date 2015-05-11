@@ -293,7 +293,7 @@ Take this example:
     lib: {
       {
         person: function(doc) {
-          if (doc._id.match(/^person\//)) return
+          if (!doc._id.match(/^person\//)) return
           return {
             name: doc.firstname + ' ' + doc.lastname,
             createdAt: Date.parse(doc.created_at)
