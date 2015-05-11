@@ -329,6 +329,7 @@ CommonJS modules can also be used for shows, lists and validate\_doc\_update
 functions.
 Note that the `person` module is inside the `views` object. This is needed for
 CouchDB in order to detect changes on the view code.
+Reduce functions *can NOT* use modules.
 
 
 ## Change Password
