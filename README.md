@@ -27,6 +27,8 @@ Collect best practices around the CouchDB universe.
 * [Per Document Access Control](#per-document-access-control)
 * [View Collation](#view-collation)
 * [Group Level](#group-level)
+* [One To N Relations](#one-to-n-relations)
+
 
 ## Creating Admin User
 First thing to do is setup the user accout
@@ -633,3 +635,46 @@ Upto `group_level=7` (which is the same as `group=true`)
 ```
 
 Combining this with key or range queries you can get all sort of fine graned stats.
+
+
+## One To N Relations
+Of course you can just use an array inside the document to store related data.
+This has a downside when the related data has to be updated, because conflicts
+can be created and this also introduces growing revisions which affects replication
+performance.
+
+Its best to store related data in an extra document. You can use the id to link
+the documents together. That way you don't even need a view to fetch them together.
+
+```json
+{
+  "_id": "artist/tom-waits",
+  "name": "Tom Waits"
+}
+```
+
+```json
+[
+  {
+    "_id": artist/tom-waits/album/closing-time",
+    "title": "Closing Time"
+  }
+  {
+    "_id": artist/tom-waits/album/rain-dogs",
+    "title": "Rain Dogs"
+  }
+  {
+    "_id": artist/tom-waits/album/real-gone",
+    "title": "Real Gone"
+  }
+]
+```
+
+Now you can use the built-in `_all_docs` view to query the artist and all of its
+albums together:
+
+```sh
+curl $db/_all_docs?startkey="artist/tom-waits"&endkey="artist/tom-waits/\ufff0"
+```
+
+
