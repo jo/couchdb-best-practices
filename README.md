@@ -26,6 +26,7 @@ Collect best practices around the CouchDB universe.
 * [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
 * [Per Document Access Control](#per-document-access-control)
 * [View Collation](#view-collation)
+* [Group Level](#group-level)
 
 ## Creating Admin User
 First thing to do is setup the user accout
@@ -504,6 +505,131 @@ Complex Keys order in the following matter:
 Read more about this topic in [CouchDB
 "Joins"](http://www.cmlenz.net/archives/2007/10/couchdb-joins) by Christopher Lenz
 and in the [CouchDB docs about View
-Collation](docs.couchdb.org/en/latest/couchapp/views/collation.html)
+Collation](https://docs.couchdb.org/en/latest/couchapp/views/collation.html)
 
 
+## Group Level
+Consider the follwing documents
+```json
+[
+  { "_id": "1", "date": "2014-05-01T00:00:00.000Z", "temperature": -10.00 },
+  { "_id": "2", "date": "2015-01-01T00:00:00.000Z", "temperature":  -7.00 },
+  { "_id": "3", "date": "2015-02-01T00:00:00.000Z", "temperature":  10.00 },
+  { "_id": "4", "date": "2015-02-02T00:00:00.000Z", "temperature":  11.00 },
+  { "_id": "5", "date": "2015-02-02T01:00:00.000Z", "temperature":  12.00 },
+  { "_id": "6", "date": "2015-02-02T01:01:00.000Z", "temperature":  12.20 },
+  { "_id": "7", "date": "2015-02-02T01:01:01.000Z", "temperature":  12.21 }
+]
+```
+
+And the map function:
+```js
+function(doc) {
+  var date = new Date(doc.date)
+
+  emit([
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDay(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  ], doc.temperature);
+}
+```
+And the build in reduce function `_stats`.
+
+When you not query the view you get the stats over all entries:
+```json
+{
+  "rows" : [
+    {
+      "value" : {
+        "max" : 12.21,
+        "sumsqr" : 811.9241,
+        "count" : 7,
+        "sum" : 40.41,
+        "min" : -10
+      },
+      "key" : null
+    }
+  ]
+}
+```
+
+`group_level=7` gives you
+```json
+{
+   "rows" : [
+      {
+         "key" : [
+            2014
+         ],
+         "value" : {
+            "sumsqr" : 100,
+            "count" : 1,
+            "max" : -10,
+            "min" : -10,
+            "sum" : -10
+         }
+      },
+      {
+         "key" : [
+            2015
+         ],
+         "value" : {
+            "count" : 6,
+            "sumsqr" : 711.9241,
+            "min" : -7,
+            "max" : 12.21,
+            "sum" : 50.41
+         }
+      }
+   ]
+}
+```
+
+Upto `group_level=7` (which is the same as `group=true`)
+```json
+{
+   "rows" : [
+      {
+         "key" : [
+            2014,
+            4,
+            4,
+            2,
+            0,
+            0
+         ],
+         "value" : {
+            "max" : -10,
+            "count" : 1,
+            "sum" : -10,
+            "min" : -10,
+            "sumsqr" : 100
+         }
+      },
+      ...
+      {
+         "value" : {
+            "min" : 12.21,
+            "sum" : 12.21,
+            "sumsqr" : 149.0841,
+            "max" : 12.21,
+            "count" : 1
+         },
+         "key" : [
+            2015,
+            1,
+            1,
+            2,
+            1,
+            1
+         ]
+      }
+   ]
+}
+```
+
+Combining this with key or range queries you can get all sort of fine graned stats.
