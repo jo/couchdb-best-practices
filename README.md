@@ -97,9 +97,19 @@ need the last bit of performance.
 
 ## Filtered Replication
 Filtered replication is a great way limit the amount of data synchronized on a
-device. But be aware that replication filters other than `_doc_ids` are very slow,
+device.
+
+Filters can be by id (`_doc_ids`), by filter function, or by view (`_view`).
+
+Be aware that replication filters other than `_doc_ids` are very slow,
 because they run on *every* document. Consider writing those filter functions in
 Erlang.
+
+When using filtered replication think about deleted documents, and whether they
+pass the filter. One way is to filter by id (this might be an argument for keeping
+`type` in the id).  
+Or deletion can be implemented as an update with `_deleted: true`. That way data
+is still there and can be used in the filter.
 
 
 ## Conflict Handling
@@ -116,6 +126,15 @@ look at the
 ## Data Migrations
 Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
 PouchDB plugin to help with migrations.
+
+You can either run migration on startup (the plugin remembers if a replication has
+already been run, so the extra cost on startup is getting a single local document)
+or you can setup a daemon on the server.
+
+Its also possible to run a migration manually from a dev computer.
+
+Please take care of your migration function. It *must* recognice whether a doc
+already has been migrated, otherwise the migration is cought in a loop!
 
 
 ## CouchDB Behind A Proxy
