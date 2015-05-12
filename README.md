@@ -23,7 +23,7 @@ Collect best practices around the CouchDB universe.
 * [PouchDB and AngularJS](#pouchdb-and-angularjs)
 * [Full Text Search](#full-text-search)
 * [Using Replication](#using-replication)
-
+* [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
 
 ## Creating Admin User
 First thing to do is setup the user accout
