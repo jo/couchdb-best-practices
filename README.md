@@ -371,10 +371,47 @@ the latter.
 ## Using Replication
 There are two ways to start a replication: the `_replicator` database and the
 `_replicate` API endpoint.
+Use `_replicator` database when in doubt.
 
 ### `_replicate` API endpoint
-When you use Futon you use the replicator endpoint.
+When you use Futon you use the replicator endpoint. To initiate a replication
+post a json:
+```json
+{
+  "source": "a-db",
+  "target": "another-db",
+  "continuous": true
+}
+```
+The response includes a replication id (which can also be optained from
+`_active_tasks`):
+```json
+{
+  "ok": true,
+  "_local_id": "0a81b645497e6270611ec3419767a584+continuous"
+}
+```
+Having this id you can cancel a continuous replication by posting
+```json
+{
+  "replication_id": "0a81b645497e6270611ec3419767a584+continuous",
+  "cancel": true
+}
+```
+to the `_replicate` endpoint.
+
 
 ### `_replicator` Database
 Replications created via the `_replicator` database are persisted and survive a
-server restart.
+server restart. Its just a normal database which means you have the default
+operations. Replications are initiated by creating replication documents:
+```json
+{
+  "_id": "initial-replication/a-db/another-db",
+  "source": "a-db",
+  "target": "another-db",
+  "continuous": true
+}
+```
+Look, you can have meaningful ids! Cancelling is straight forward - just delete
+the document.
