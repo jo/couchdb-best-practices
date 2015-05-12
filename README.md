@@ -24,8 +24,8 @@ Collect best practices around the CouchDB universe.
 * [Full Text Search](#full-text-search)
 * [Using Replication](#using-replication)
 * [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
-* [Per Document Access Control](per-document-access-control)
-
+* [Per Document Access Control](#per-document-access-control)
+* [View Collation](#view-collation)
 
 ## Creating Admin User
 First thing to do is setup the user accout
@@ -159,6 +159,7 @@ the proxy behind a subdirectory, eg
 
 ## Linked Documents
 Or How do I do SQL-like JOINs? Can I avoid them?
+
 CouchDB (and PouchDB) supports [linked
 documents](https://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Linked_documents).
 Use them to join two types of documents together, by simply adding an `_id` to the
@@ -482,5 +483,27 @@ An other way to achive per document access control, even on a per field basis, i
 to use encryption. [crypto-pouch](https://github.com/calvinmetcalf/crypto-pouch)
 and [pouch-box](https://github.com/jo/pouch-box) might help.
 
+
+## View Collation
+View Collation basically just means the conzept to query data by ranges, thus
+using `startkey` and `endkey`. In CouchDB keys does not necessarily be strings,
+they can be arbitrary JSON values. If thats the case we talk about _complex keys_.
+
+Making use of View Collation enables us to query related documents together. Its
+the CouchDB way of doing *joins*. See [Linked Documents](#linked-documents).
+
+Complex Keys order in the following matter:
+
+1. `null`, `false`, `true`
+2. `1`, `2`...
+3. `a`, `A`, `b`...`\ufff0`
+4. `["a"]`, `["b"]`, `["b","c"]`
+5. `{}`, `{a:1}`, `{a:2}`, `{b:1}`
+
+
+Read more about this topic in [CouchDB
+"Joins"](http://www.cmlenz.net/archives/2007/10/couchdb-joins) by Christopher Lenz
+and in the [CouchDB docs about View
+Collation](docs.couchdb.org/en/latest/couchapp/views/collation.html)
 
 
