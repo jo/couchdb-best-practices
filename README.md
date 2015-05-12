@@ -436,3 +436,30 @@ Look, you can have meaningful ids! Cancelling is straight forward - just delete
 the document.
 Read [more about the `_replicator`
 database](https://gist.github.com/fdmanana/832610).
+
+## Two Ways of Deleting Documents
+There are two ways to delete a document: via DELETE or by updating the document
+with a `_deleted` property set to true:
+```json
+{
+  "_id": "mydoc",
+  "_rev": "1-asd",
+  "type": "person",
+  "name": "David Foster Wallace",
+  "_deleted": true
+}
+```
+
+In either way the deleted document will stay in the database, even after
+compactation. (That way the deletion can be propagated to all replicas.)
+Using the manual variant allows you to keep data, which might be useful for
+filtered replication or other purposes. Otherwise all properties will get removed
+except the plain stub:
+```json
+{
+  "_id": "mydoc",
+  "_rev": "2-def",
+  "_deleted": true
+}
+```
+
