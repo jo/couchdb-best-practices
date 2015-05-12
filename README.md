@@ -24,6 +24,8 @@ Collect best practices around the CouchDB universe.
 * [Full Text Search](#full-text-search)
 * [Using Replication](#using-replication)
 * [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
+* [Per Document Access Control](per-document-access-control)
+
 
 ## Creating Admin User
 First thing to do is setup the user accout
@@ -57,6 +59,7 @@ documents. As a guideline on how to model documents *think about when data
 changes*. Data that changes together, belongs in a document. Modelling documents
 this way a) avoids conflicts and b) keeps the number of revisions low, which
 improves replication performance and uses less storage.
+
 
 ## Your Document ID is the Best Index
 Before deciding on using a random value as doc `_id`, read the section [When not
@@ -94,6 +97,7 @@ This has no disadvantages performance wise, at least on PouchDB. For CouchDB it
 means additional lookups and prevents CouchDB from directly streaming the view
 result from disk. But this is negligible. So don't emit the whole doc unless you
 need the last bit of performance.
+
 
 ## Filtered Replication
 Filtered replication is a great way limit the amount of data synchronized on a
@@ -248,6 +252,7 @@ For example:
   "sumsqr": 30
 }
 ```
+
 
 ## Debugging PouchDB
 I often assign the database instance to window and then I run queries on it.
@@ -419,7 +424,6 @@ Having this id you can cancel a continuous replication by posting
 ```
 to the `_replicate` endpoint.
 
-
 ### `_replicator` Database
 Replications created via the `_replicator` database are persisted and survive a
 server restart. Its just a normal database which means you have the default
@@ -436,6 +440,7 @@ Look, you can have meaningful ids! Cancelling is straight forward - just delete
 the document.
 Read [more about the `_replicator`
 database](https://gist.github.com/fdmanana/832610).
+
 
 ## Two Ways of Deleting Documents
 There are two ways to delete a document: via DELETE or by updating the document
@@ -462,4 +467,20 @@ except the plain stub:
   "_deleted": true
 }
 ```
+
+
+## Per Document Access Control
+There is no way to [control access on a per document
+level](https://wiki.apache.org/couchdb/PerDocumentAuthorization).
+
+A common solution is to have a database per user.  
+To create the dbs, you need to install a daemon. There are different projects:
+* [couchperuser](https://github.com/etrepum/couchperuser) (Erlang, donated to Apache CouchDB)
+* [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning) (Node)
+
+An other way to achive per document access control, even on a per field basis, is
+to use encryption. [crypto-pouch](https://github.com/calvinmetcalf/crypto-pouch)
+and [pouch-box](https://github.com/jo/pouch-box) might help.
+
+
 
