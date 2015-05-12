@@ -415,3 +415,5 @@ operations. Replications are initiated by creating replication documents:
 ```
 Look, you can have meaningful ids! Cancelling is straight forward - just delete
 the document.
+Read [more about the `_replicator`
+database](https://gist.github.com/fdmanana/832610).
