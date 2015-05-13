@@ -29,7 +29,7 @@ Collect best practices around the CouchDB universe.
 * [View Collation](#view-collation)
 * [Group Level](#group-level)
 * [One To N Relations](#one-to-n-relations)
-
+* [N To N Relations](#n-to-n-relations)
 
 ## Creating Admin User
 First thing to do is setup the user accout
@@ -678,4 +678,103 @@ albums together:
 curl $db/_all_docs?startkey="artist/tom-waits"&endkey="artist/tom-waits/\ufff0"
 ```
 
+## N To N Relations
+Similar to 1:N relations but use extra documents which describes each relation:
 
+```json
+[
+  {
+    "_id": "person/avery-mcdonalid",
+    "name": "Avery Mcdonalid"
+  },
+  {
+    "_id": "person/troy-howell",
+    "name": "Troy Howell"
+  },
+  {
+    "_id": "person/tonya-payne",
+    "name": "Tonya Payne"
+  }
+]
+```
+
+```json
+[
+  {
+    "_id": "friendship/person/avery-mcdonalid/with/person/troy-howell",
+    "since": "2015-05-13T08:57:53.786Z"
+  },
+  {
+    "_id": "friendship/person/avery-mcdonalid/with/person/tonya-payne",
+    "since": "2015-03-02T07:21:01.123Z"
+  }
+]
+```
+
+Note how we used a deterministic order of friends in the id, we just sorted them
+alphabetically. Its important to be able to derivate the freiendship document id
+from the constituting ids to make it easy to delete a relation.
+
+
+Now write a map function like this:
+```js
+function(doc) {
+  if (!doc._id.match(/^friendship\//)) return
+  
+  var ids = doc._id.match(/person\/([^/]*)/g)
+  var one = ids[0]
+  var two = ids[1]
+
+  emit([one, two], { _id: two })
+  emit([two, one], { _id: one })
+}
+```
+
+You now can query the view for one person:
+```js
+{
+  include_docs: true
+  startkey: ["person/avery-mcdonalid"]
+  endkey: ["person/avery-mcdonalid", {}]
+}
+```
+
+and get all friends of that person:
+```json
+{
+  "total_rows" : 4,
+  "rows" : [
+    {
+      "doc" : {
+        "name" : "Tonya Payne",
+        "_rev" : "1-7aafe790e8f4f00220c699e966246421",
+        "_id" : "person/tonya-payne"
+      },
+      "value" : {
+        "_id" : "person/tonya-payne"
+      },
+      "id" : "friendship/person/avery-mcdonalid/with/person/tonya-payne",
+      "key" : [
+        "person/avery-mcdonalid",
+        "person/tonya-payne"
+      ]
+    },
+    {
+      "value" : {
+        "_id" : "person/troy-howell"
+      },
+      "doc" : {
+        "_rev" : "1-7e0328a9eb72a5544663c30052c67161",
+        "_id" : "person/troy-howell",
+        "name" : "Troy Howell"
+      },
+      "key" : [
+        "person/avery-mcdonalid",
+        "person/troy-howell"
+      ],
+      "id" : "friendship/person/avery-mcdonalid/with/person/troy-howell"
+    }
+  ],
+  "offset" : 0
+}
+```
