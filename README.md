@@ -23,6 +23,7 @@ Collect best practices around the CouchDB universe.
   * [Modularize View Code](#modularize-view-code)
   * [View Collation](#view-collation)
   * [Group Level](#group-level)
+  * [Naming Conventions For Views](#naming-conventions-for-views)
 * [Replication](#replication)
   * [Filtered Replication](#filtered-replication)
   * [Using Replication](#using-replication)
@@ -634,6 +635,68 @@ Upto `group_level=7` (which is the same as `group=true`)
 ```
 
 Combining this with key or range queries you can get all sort of fine graned stats.
+
+
+### Naming Conventions
+Naming convention for views, starting from the basic case of no reduce functions.
+Views are couples of arbitrary functions, and as such it is impossible to express
+their whole variety with a name, so i am just trying to cover the most common cases.
+
+#### No Reduce
+In the case of no reduce function, usually views are just meant to sort documents
+by a set of properties. An idea in this case is to name them like this:
+
+The main grouping parameter for the name is the “object” as it (roughly) exists
+in the application space. For example: `person`, `contact`, `address` etc.:
+```
+<object>-
+```
+
+What follows is a condition for a subset of objects, e.g. `persons-with-address`:
+```
+<object>-with-<property>
+<object>-with-no-<property>
+```
+
+Then, there is a sort option, e.g. `persons-with-address-by-createddate`:
+```
+<option>-with-<property>-by-<sortfield>
+```
+
+`with` and `by` clauses are both optional.
+
+Finally, there is an optional suffix that descibes whether the view emits the
+full document as a value, e.g. `persons-with-address-fulldoc`: 
+```
+<object>-with-<property>-fulldoc
+```
+
+
+When a property is nested, just replace the dot `.` with a dash `-`. Convert
+cases to lowercase. Convert underscore separated to no separation.
+
+
+##### Examples
+```
+people // all people documents
+cases-by-lastmodifieddate // all cases sorted by doc.lastModifiedDate
+address-with-city-by-createddate // all addresses that have a city property sortedby doc.createdDate
+```
+
+#### With a reduce function
+In this case, i would use the same convention, with a prefix expressing the reduce.
+The reduce part could be structured as follows:
+```
+[count|sum|stats]-[on-<property>-]<map part>
+```
+
+##### Examples
+```
+stats-on-patient-age-by-case-status
+```
+
+The case above refers to builtin reduce functions, which should cover the wide
+majority of uses.
 
 
 
