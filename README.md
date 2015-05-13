@@ -2,36 +2,43 @@
 Collect best practices around the CouchDB universe.
 
 
-**:warning: Currently this document is in a structure less, append only mode.**
+* [User Management](#user-management)
+  * [Creating Admin User](#creating-admin-user)
+  * [Creating User](#creating-user)
+  * [Change Password](#change-password)
+* [Document Modelling](#document-modeling)
+  * [Document Modeling To Avoid Conflicts](#document-modeling-to-avoid-conflicts)
+  * [Your Document ID Is The Best Index](#your-document-id-is-the-best-index)
+  * [Data Migrations](#data-migrations)
+  * [Per Document Access Control](#per-document-access-control)
+  * [One To N Relations](#one-to-n-relations)
+  * [N To N Relations](#n-to-n-relations)
+* [Views](#views)
+  * [Do Not Emit Entire Docs](#do-not-emit-entire-docs)
+  * [Linked Documents](#linked-documents)
+  * [Built-In Reduce Functions](#built-in-reduce-functions)
+  * [Debugging Views](#debugging-views)
+  * [Testing Views](#testing-views)
+  * [Deploying Views](#deploying-views)
+  * [Modularize View Code](#modularize-view-code)
+  * [View Collation](#view-collation)
+  * [Group Level](#group-level)
+* [Replication](#replication)
+  * [Filtered Replication](#filtered-replication)
+  * [Using Replication](#using-replication)
+* [Conflicts](#conflicts)
+  * [Conflict Handling](#conflict-handling)
+* [Deployment](#deployment)
+  * [CouchDB Behind A Proxy](#couchdb-behind-a-proxy)
+* [Misc](#misc)
+  * [Debugging PouchDB](#debugging-pouchdb)
+  * [PouchDB and AngularJS](#pouchdb-and-angularjs)
+  * [Full Text Search](#full-text-search)
+  * [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
 
-* [Creating Admin User](#creating-admin-user)
-* [Creating User](#creating-user)
-* [Document Modeling To Avoid Conflicts](#document-modeling-to-avoid-conflicts)
-* [Your Document ID Is The Best Index](#your-document-id-is-the-best-index)
-* [Do Not Emit Entire Docs](#do-not-emit-entire-docs)
-* [Filtered Replication](#filtered-replication)
-* [Conflict Handling](#conflict-handling)
-* [Data Migrations](#data-migrations)
-* [CouchDB Behind A Proxy](#couchdb-behind-a-proxy)
-* [Linked Documents](#linked-documents)
-* [Built-In Reduce Functions](#built-in-reduce-functions)
-* [Debugging PouchDB](#debugging-pouchdb)
-* [Debugging Views](#debugging-views)
-* [Testing Views](#testing-views)
-* [Deploying Views](#deploying-views)
-* [Modularize View Code](#modularize-view-code)
-* [Change Password](#change-password)
-* [PouchDB and AngularJS](#pouchdb-and-angularjs)
-* [Full Text Search](#full-text-search)
-* [Using Replication](#using-replication)
-* [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
-* [Per Document Access Control](#per-document-access-control)
-* [View Collation](#view-collation)
-* [Group Level](#group-level)
-* [One To N Relations](#one-to-n-relations)
-* [N To N Relations](#n-to-n-relations)
 
-## Creating Admin User
+## User Management
+### Creating Admin User
 First thing to do is setup the user accout
 
 * Go to [http://localhost:5984/_utils/](http://localhost:5984/_utils) in your
@@ -44,7 +51,7 @@ Great, now you've configured your Admin User. However, you don't want to
 actually use this account to do things, so proceed!
 
 
-## Creating User
+### Creating User
 To create a non admin user, follow these steps:
 
 * While still on `http://localhost:5984/_utils/` in your browser (and logged
@@ -53,7 +60,22 @@ To create a non admin user, follow these steps:
 * Enter username + password
 
 
-## Document Modeling to Avoid Conflicts
+### Change Password
+Since CouchDB 1.2 updating the user password has become much easyer:
+
+1. Request the user doc: `GET /_users/org.couchdb.user:a-username`
+2. Set a `password` property with the password
+3. Save the doc
+
+The [User authentication plugin for PouchDB and
+CouchDB](https://github.com/nolanlawson/pouchdb-authentication) provides a
+[`changePassword`](https://github.com/nolanlawson/pouchdb-authentication#user-content-dbchangepasswordusername-password--opts-callback)
+function for your convenience.
+
+
+## Document Modeling
+
+### Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
 document’. This is not according to CouchDB best practice. *Split data into many
 small documents* depending on how often and when data changes.  That way, you can
@@ -65,7 +87,7 @@ this way a) avoids conflicts and b) keeps the number of revisions low, which
 improves replication performance and uses less storage.
 
 
-## Your Document ID is the Best Index
+### Your Document ID is the Best Index
 Before deciding on using a random value as doc `_id`, read the section [When not
 to use map
 reduce](http://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html)
@@ -78,7 +100,178 @@ document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
 document id knowledge.
 
 
-## Do Not Emit Entire Docs
+### Data Migrations
+Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
+PouchDB plugin to help with migrations.
+
+You can either run migration on startup (the plugin remembers if a replication has
+already been run, so the extra cost on startup is getting a single local document)
+or you can setup a daemon on the server.
+
+Its also possible to run a migration manually from a dev computer.
+
+Please take care of your migration function. It *must* recognice whether a doc
+already has been migrated, otherwise the migration is cought in a loop!
+
+
+### Per Document Access Control
+There is no way to [control access on a per document
+level](https://wiki.apache.org/couchdb/PerDocumentAuthorization).
+
+A common solution is to have a database per user.  
+To create the dbs, you need to install a daemon. There are different projects:
+* [couchperuser](https://github.com/etrepum/couchperuser) (Erlang, donated to Apache CouchDB)
+* [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning) (Node)
+
+An other way to achive per document access control, even on a per field basis, is
+to use encryption. [crypto-pouch](https://github.com/calvinmetcalf/crypto-pouch)
+and [pouch-box](https://github.com/jo/pouch-box) might help.
+
+
+### One To N Relations
+Of course you can just use an array inside the document to store related data.
+This has a downside when the related data has to be updated, because conflicts
+can be created and this also introduces growing revisions which affects replication
+performance.
+
+Its best to store related data in an extra document. You can use the id to link
+the documents together. That way you don't even need a view to fetch them together.
+
+```json
+{
+  "_id": "artist/tom-waits",
+  "name": "Tom Waits"
+}
+```
+
+```json
+[
+  {
+    "_id": "artist/tom-waits/album/closing-time",
+    "title": "Closing Time"
+  }
+  {
+    "_id": "artist/tom-waits/album/rain-dogs",
+    "title": "Rain Dogs"
+  }
+  {
+    "_id": "artist/tom-waits/album/real-gone",
+    "title": "Real Gone"
+  }
+]
+```
+
+Now you can use the built-in `_all_docs` view to query the artist and all of its
+albums together:
+
+```sh
+curl $db/_all_docs?startkey="artist/tom-waits"&endkey="artist/tom-waits/\ufff0"
+```
+
+### N To N Relations
+Similar to 1:N relations but use extra documents which describes each relation:
+
+```json
+[
+  {
+    "_id": "person/avery-mcdonalid",
+    "name": "Avery Mcdonalid"
+  },
+  {
+    "_id": "person/troy-howell",
+    "name": "Troy Howell"
+  },
+  {
+    "_id": "person/tonya-payne",
+    "name": "Tonya Payne"
+  }
+]
+```
+
+```json
+[
+  {
+    "_id": "friendship/person/avery-mcdonalid/with/person/troy-howell",
+    "since": "2015-05-13T08:57:53.786Z"
+  },
+  {
+    "_id": "friendship/person/avery-mcdonalid/with/person/tonya-payne",
+    "since": "2015-03-02T07:21:01.123Z"
+  }
+]
+```
+
+Note how we used a deterministic order of friends in the id, we just sorted them
+alphabetically. Its important to be able to derivate the freiendship document id
+from the constituting ids to make it easy to delete a relation.
+
+
+Now write a map function like this:
+```js
+function(doc) {
+  if (!doc._id.match(/^friendship\//)) return
+  
+  var ids = doc._id.match(/person\/([^/]*)/g)
+  var one = ids[0]
+  var two = ids[1]
+
+  emit([one, two], { _id: two })
+  emit([two, one], { _id: one })
+}
+```
+
+You now can query the view for one person:
+```js
+{
+  include_docs: true
+  startkey: ["person/avery-mcdonalid"]
+  endkey: ["person/avery-mcdonalid", {}]
+}
+```
+
+and get all friends of that person:
+```json
+{
+  "total_rows" : 4,
+  "rows" : [
+    {
+      "doc" : {
+        "name" : "Tonya Payne",
+        "_rev" : "1-7aafe790e8f4f00220c699e966246421",
+        "_id" : "person/tonya-payne"
+      },
+      "value" : {
+        "_id" : "person/tonya-payne"
+      },
+      "id" : "friendship/person/avery-mcdonalid/with/person/tonya-payne",
+      "key" : [
+        "person/avery-mcdonalid",
+        "person/tonya-payne"
+      ]
+    },
+    {
+      "value" : {
+        "_id" : "person/troy-howell"
+      },
+      "doc" : {
+        "_rev" : "1-7e0328a9eb72a5544663c30052c67161",
+        "_id" : "person/troy-howell",
+        "name" : "Troy Howell"
+      },
+      "key" : [
+        "person/avery-mcdonalid",
+        "person/troy-howell"
+      ],
+      "id" : "friendship/person/avery-mcdonalid/with/person/troy-howell"
+    }
+  ],
+  "offset" : 0
+}
+```
+
+## Views
+
+### Do Not Emit Entire Docs
 You can query a view with `include_docs=true`. Then in the view result every row has
 the whole doc included:
 ```json
@@ -103,65 +296,7 @@ result from disk. But this is negligible. So don't emit the whole doc unless you
 need the last bit of performance.
 
 
-## Filtered Replication
-Filtered replication is a great way limit the amount of data synchronized on a
-device.
-
-Filters can be by id (`_doc_ids`), by filter function, or by view (`_view`).
-
-Be aware that replication filters other than `_doc_ids` are very slow,
-because they run on *every* document. Consider writing those filter functions in
-Erlang.
-
-When using filtered replication think about deleted documents, and whether they
-pass the filter. One way is to filter by id (this might be an argument for keeping
-`type` in the id).  
-Or deletion can be implemented as an update with `_deleted: true`. That way data
-is still there and can be used in the filter.
-
-
-## Conflict Handling
-Some things need to and should be conflicts. CouchDB *conflicts are first class
-citicens*, (or at least [should be treaded
-so](https://gist.github.com/rnewson/2387973#file-gistfile1-txt-L6)). If 2
-different users enter different addresses for the same person at the same time,
-that probably should create a conflict. Your best option is to have a conflict
-resolution daemon running on the server. While we don’t have this at the moment,
-look at the
-[pouch-resolve-conflicts](https://github.com/jo/pouch-resolve-conflicts) plugin.
-
-
-## Data Migrations
-Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
-PouchDB plugin to help with migrations.
-
-You can either run migration on startup (the plugin remembers if a replication has
-already been run, so the extra cost on startup is getting a single local document)
-or you can setup a daemon on the server.
-
-Its also possible to run a migration manually from a dev computer.
-
-Please take care of your migration function. It *must* recognice whether a doc
-already has been migrated, otherwise the migration is cought in a loop!
-
-
-## CouchDB Behind A Proxy
-Running CouchDB behind a proxy is recommended, eg. to handle ssl termination.
-
-*Prefer subdomain over subdirectory*.  Nginx encodes urls on the way through.
-So, for example, if you request
-`http://my.couch.behind.nginx.com/mydb/foo%2Fbar` it gets routed to CouchDB as
-`/mydb/foo/bar`, which is not what we want.
-
-We can configure this mad behaviour away (by [not appending a slash to the
-`proxy_pass`
-target[(http://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds)).
-But there is no way to convince nginx not messing with the url when rewriting
-the proxy behind a subdirectory, eg
-`http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
-
-
-## Linked Documents
+### Linked Documents
 Or How do I do SQL-like JOINs? Can I avoid them?
 
 CouchDB (and PouchDB) supports [linked
@@ -222,7 +357,7 @@ And this is a result:
 Using linked documents can be a way to group together related data.
 
 
-## Built-In Reduce Functions
+### Built-In Reduce Functions
 CouchDB has some build in reduce functions to accomplish common tasks. They are
 native and very performant. Choose them wherever possible.
 To use a built in reduce, insert the name string instead of the function code,
@@ -238,13 +373,13 @@ eg
 }
 ```
 
-### `_sum`
+###### `_sum`
 Adds up the emitted values, which must be numbers.
 
-### `_count`
+###### `_count`
 Counts the number of emitted values.
 
-### `_stats`
+###### `_stats`
 Calculates some numerical statistics on your emitted values, which must be
 numbers.
 For example:
@@ -259,24 +394,13 @@ For example:
 ```
 
 
-## Debugging PouchDB
-I often assign the database instance to window and then I run queries on it.
-Or you can replicate to a local CouchDB and debug your views there.
-
-If you like PouchDB to be more verbose, [enable debug
-output](http://pouchdb.com/api.html#debug_mode):
-```js
-PouchDB.debug.enable('*')
-```
-
-
-## Debugging Views
+### Debugging Views
 View debugging can be a pain when you're restricted to Futon or even Fauxton.
 By using [couchdb-view-tester](https://github.com/gr2m/couchdb-view-tester) you
 can write view code in your preferred editor and watch the results in real time.
 
 
-## Testing Views
+### Testing Views
 Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a a simple
 CouchDB design doc testing tool.
 ```js
@@ -291,7 +415,7 @@ assert.equals(result, fixture)
 ```
 
 
-## Deploying Views
+### Deploying Views
 You want to keep your view code in VCS. Now you need a way to install the view
 function. You can use the [Python Couchapp
 Tool](https://github.com/couchapp/couchapp). Its a CLI which reads a directory,
@@ -309,7 +433,7 @@ There is also a handy Grunt task,
 into the Grunt toolchain.
 
 
-## Modularize View Code
+### Modularize View Code
 While you work with views at some point you might want to share code between
 views or simply break your code into smaller modules. For that purpose CouchDB
 has [support for CommonJS
@@ -362,133 +486,7 @@ CouchDB in order to detect changes on the view code.
 Reduce functions *can NOT* use modules.
 
 
-## Change Password
-Since CouchDB 1.2 updating the user password has become much easyer:
-
-1. Request the user doc: `GET /_users/org.couchdb.user:a-username`
-2. Set a `password` property with the password
-3. Save the doc
-
-The [User authentication plugin for PouchDB and
-CouchDB](https://github.com/nolanlawson/pouchdb-authentication) provides a
-[`changePassword`](https://github.com/nolanlawson/pouchdb-authentication#user-content-dbchangepasswordusername-password--opts-callback)
-function for your convenience.
-
-
-## PouchDB and AngularJS
-To use PouchDB with AngularJS you should use
-[angular-pouchdb](https://github.com/angular-pouchdb/angular-pouchdb), which
-wraps PouchDBs promises with Angulars `$q`s.
-
-
-## Full Text Search
-While basic full text search is possible just by using views, its not
-convenient and you should make use of a dedicated FTI.
-
-### Client Side
-For PouchDB the situation is clear: Use [PouchDB Quick
-Search](https://github.com/nolanlawson/pouchdb-quick-search). Its a PouchDB
-plugin based on [lunr.js](http://lunrjs.com/).
-
-### Server Side
-On a CouchDB server you have options: Lucene (via
-[couchdb-lucene](http://github.com/rnewson/couchdb-lucene)) or ElasticSearch via
-[The River](https://www.elastic.co/blog/the-river/). At eHealth Africa we use
-the latter.
-
-
-## Using Replication
-There are two ways to start a replication: the `_replicator` database and the
-`_replicate` API endpoint.
-Use `_replicator` database when in doubt.
-
-### `_replicate` API endpoint
-When you use Futon you use the replicator endpoint. To initiate a replication
-post a json:
-```json
-{
-  "source": "a-db",
-  "target": "another-db",
-  "continuous": true
-}
-```
-The response includes a replication id (which can also be optained from
-`_active_tasks`):
-```json
-{
-  "ok": true,
-  "_local_id": "0a81b645497e6270611ec3419767a584+continuous"
-}
-```
-Having this id you can cancel a continuous replication by posting
-```json
-{
-  "replication_id": "0a81b645497e6270611ec3419767a584+continuous",
-  "cancel": true
-}
-```
-to the `_replicate` endpoint.
-
-### `_replicator` Database
-Replications created via the `_replicator` database are persisted and survive a
-server restart. Its just a normal database which means you have the default
-operations. Replications are initiated by creating replication documents:
-```json
-{
-  "_id": "initial-replication/a-db/another-db",
-  "source": "a-db",
-  "target": "another-db",
-  "continuous": true
-}
-```
-Look, you can have meaningful ids! Cancelling is straight forward - just delete
-the document.
-Read [more about the `_replicator`
-database](https://gist.github.com/fdmanana/832610).
-
-
-## Two Ways of Deleting Documents
-There are two ways to delete a document: via DELETE or by updating the document
-with a `_deleted` property set to true:
-```json
-{
-  "_id": "mydoc",
-  "_rev": "1-asd",
-  "type": "person",
-  "name": "David Foster Wallace",
-  "_deleted": true
-}
-```
-
-In either way the deleted document will stay in the database, even after
-compactation. (That way the deletion can be propagated to all replicas.)
-Using the manual variant allows you to keep data, which might be useful for
-filtered replication or other purposes. Otherwise all properties will get removed
-except the plain stub:
-```json
-{
-  "_id": "mydoc",
-  "_rev": "2-def",
-  "_deleted": true
-}
-```
-
-
-## Per Document Access Control
-There is no way to [control access on a per document
-level](https://wiki.apache.org/couchdb/PerDocumentAuthorization).
-
-A common solution is to have a database per user.  
-To create the dbs, you need to install a daemon. There are different projects:
-* [couchperuser](https://github.com/etrepum/couchperuser) (Erlang, donated to Apache CouchDB)
-* [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning) (Node)
-
-An other way to achive per document access control, even on a per field basis, is
-to use encryption. [crypto-pouch](https://github.com/calvinmetcalf/crypto-pouch)
-and [pouch-box](https://github.com/jo/pouch-box) might help.
-
-
-## View Collation
+### View Collation
 View Collation basically just means the conzept to query data by ranges, thus
 using `startkey` and `endkey`. In CouchDB keys does not necessarily be strings,
 they can be arbitrary JSON values. If thats the case we talk about _complex keys_.
@@ -511,7 +509,7 @@ and in the [CouchDB docs about View
 Collation](https://docs.couchdb.org/en/latest/couchapp/views/collation.html)
 
 
-## Group Level
+### Group Level
 Consider the follwing documents
 ```json
 [
@@ -638,143 +636,169 @@ Upto `group_level=7` (which is the same as `group=true`)
 Combining this with key or range queries you can get all sort of fine graned stats.
 
 
-## One To N Relations
-Of course you can just use an array inside the document to store related data.
-This has a downside when the related data has to be updated, because conflicts
-can be created and this also introduces growing revisions which affects replication
-performance.
 
-Its best to store related data in an extra document. You can use the id to link
-the documents together. That way you don't even need a view to fetch them together.
+## Replication
 
+### Filtered Replication
+Filtered replication is a great way limit the amount of data synchronized on a
+device.
+
+Filters can be by id (`_doc_ids`), by filter function, or by view (`_view`).
+
+Be aware that replication filters other than `_doc_ids` are very slow,
+because they run on *every* document. Consider writing those filter functions in
+Erlang.
+
+When using filtered replication think about deleted documents, and whether they
+pass the filter. One way is to filter by id (this might be an argument for keeping
+`type` in the id).  
+Or deletion can be implemented as an update with `_deleted: true`. That way data
+is still there and can be used in the filter.
+
+
+### Using Replication
+There are two ways to start a replication: the `_replicator` database and the
+`_replicate` API endpoint.
+Use `_replicator` database when in doubt.
+
+###### `_replicate` API endpoint
+When you use Futon you use the replicator endpoint. To initiate a replication
+post a json:
 ```json
 {
-  "_id": "artist/tom-waits",
-  "name": "Tom Waits"
+  "source": "a-db",
+  "target": "another-db",
+  "continuous": true
 }
 ```
-
+The response includes a replication id (which can also be optained from
+`_active_tasks`):
 ```json
-[
-  {
-    "_id": "artist/tom-waits/album/closing-time",
-    "title": "Closing Time"
-  }
-  {
-    "_id": "artist/tom-waits/album/rain-dogs",
-    "title": "Rain Dogs"
-  }
-  {
-    "_id": "artist/tom-waits/album/real-gone",
-    "title": "Real Gone"
-  }
-]
+{
+  "ok": true,
+  "_local_id": "0a81b645497e6270611ec3419767a584+continuous"
+}
 ```
-
-Now you can use the built-in `_all_docs` view to query the artist and all of its
-albums together:
-
-```sh
-curl $db/_all_docs?startkey="artist/tom-waits"&endkey="artist/tom-waits/\ufff0"
-```
-
-## N To N Relations
-Similar to 1:N relations but use extra documents which describes each relation:
-
+Having this id you can cancel a continuous replication by posting
 ```json
-[
-  {
-    "_id": "person/avery-mcdonalid",
-    "name": "Avery Mcdonalid"
-  },
-  {
-    "_id": "person/troy-howell",
-    "name": "Troy Howell"
-  },
-  {
-    "_id": "person/tonya-payne",
-    "name": "Tonya Payne"
-  }
-]
+{
+  "replication_id": "0a81b645497e6270611ec3419767a584+continuous",
+  "cancel": true
+}
 ```
+to the `_replicate` endpoint.
 
+###### `_replicator` Database
+Replications created via the `_replicator` database are persisted and survive a
+server restart. Its just a normal database which means you have the default
+operations. Replications are initiated by creating replication documents:
 ```json
-[
-  {
-    "_id": "friendship/person/avery-mcdonalid/with/person/troy-howell",
-    "since": "2015-05-13T08:57:53.786Z"
-  },
-  {
-    "_id": "friendship/person/avery-mcdonalid/with/person/tonya-payne",
-    "since": "2015-03-02T07:21:01.123Z"
-  }
-]
+{
+  "_id": "initial-replication/a-db/another-db",
+  "source": "a-db",
+  "target": "another-db",
+  "continuous": true
+}
 ```
+Look, you can have meaningful ids! Cancelling is straight forward - just delete
+the document.
+Read [more about the `_replicator`
+database](https://gist.github.com/fdmanana/832610).
 
-Note how we used a deterministic order of friends in the id, we just sorted them
-alphabetically. Its important to be able to derivate the freiendship document id
-from the constituting ids to make it easy to delete a relation.
 
 
-Now write a map function like this:
+## Conflicts
+
+### Conflict Handling
+Some things need to and should be conflicts. CouchDB *conflicts are first class
+citicens*, (or at least [should be treaded
+so](https://gist.github.com/rnewson/2387973#file-gistfile1-txt-L6)). If 2
+different users enter different addresses for the same person at the same time,
+that probably should create a conflict. Your best option is to have a conflict
+resolution daemon running on the server. While we don’t have this at the moment,
+look at the
+[pouch-resolve-conflicts](https://github.com/jo/pouch-resolve-conflicts) plugin.
+
+
+
+## Deployment
+
+### CouchDB Behind A Proxy
+Running CouchDB behind a proxy is recommended, eg. to handle ssl termination.
+
+*Prefer subdomain over subdirectory*.  Nginx encodes urls on the way through.
+So, for example, if you request
+`http://my.couch.behind.nginx.com/mydb/foo%2Fbar` it gets routed to CouchDB as
+`/mydb/foo/bar`, which is not what we want.
+
+We can configure this mad behaviour away (by [not appending a slash to the
+`proxy_pass`
+target[(http://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds)).
+But there is no way to convince nginx not messing with the url when rewriting
+the proxy behind a subdirectory, eg
+`http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
+
+
+
+## Misc
+
+### Debugging PouchDB
+I often assign the database instance to window and then I run queries on it.
+Or you can replicate to a local CouchDB and debug your views there.
+
+If you like PouchDB to be more verbose, [enable debug
+output](http://pouchdb.com/api.html#debug_mode):
 ```js
-function(doc) {
-  if (!doc._id.match(/^friendship\//)) return
-  
-  var ids = doc._id.match(/person\/([^/]*)/g)
-  var one = ids[0]
-  var two = ids[1]
-
-  emit([one, two], { _id: two })
-  emit([two, one], { _id: one })
-}
+PouchDB.debug.enable('*')
 ```
 
-You now can query the view for one person:
-```js
-{
-  include_docs: true
-  startkey: ["person/avery-mcdonalid"]
-  endkey: ["person/avery-mcdonalid", {}]
-}
-```
+### PouchDB and AngularJS
+To use PouchDB with AngularJS you should use
+[angular-pouchdb](https://github.com/angular-pouchdb/angular-pouchdb), which
+wraps PouchDBs promises with Angulars `$q`s.
 
-and get all friends of that person:
+
+### Full Text Search
+While basic full text search is possible just by using views, its not
+convenient and you should make use of a dedicated FTI.
+
+###### Client Side
+For PouchDB the situation is clear: Use [PouchDB Quick
+Search](https://github.com/nolanlawson/pouchdb-quick-search). Its a PouchDB
+plugin based on [lunr.js](http://lunrjs.com/).
+
+###### Server Side
+On a CouchDB server you have options: Lucene (via
+[couchdb-lucene](http://github.com/rnewson/couchdb-lucene)) or ElasticSearch via
+[The River](https://www.elastic.co/blog/the-river/). At eHealth Africa we use
+the latter.
+
+
+### Two Ways of Deleting Documents
+There are two ways to delete a document: via DELETE or by updating the document
+with a `_deleted` property set to true:
 ```json
 {
-  "total_rows" : 4,
-  "rows" : [
-    {
-      "doc" : {
-        "name" : "Tonya Payne",
-        "_rev" : "1-7aafe790e8f4f00220c699e966246421",
-        "_id" : "person/tonya-payne"
-      },
-      "value" : {
-        "_id" : "person/tonya-payne"
-      },
-      "id" : "friendship/person/avery-mcdonalid/with/person/tonya-payne",
-      "key" : [
-        "person/avery-mcdonalid",
-        "person/tonya-payne"
-      ]
-    },
-    {
-      "value" : {
-        "_id" : "person/troy-howell"
-      },
-      "doc" : {
-        "_rev" : "1-7e0328a9eb72a5544663c30052c67161",
-        "_id" : "person/troy-howell",
-        "name" : "Troy Howell"
-      },
-      "key" : [
-        "person/avery-mcdonalid",
-        "person/troy-howell"
-      ],
-      "id" : "friendship/person/avery-mcdonalid/with/person/troy-howell"
-    }
-  ],
-  "offset" : 0
+  "_id": "mydoc",
+  "_rev": "1-asd",
+  "type": "person",
+  "name": "David Foster Wallace",
+  "_deleted": true
 }
 ```
+
+In either way the deleted document will stay in the database, even after
+compactation. (That way the deletion can be propagated to all replicas.)
+Using the manual variant allows you to keep data, which might be useful for
+filtered replication or other purposes. Otherwise all properties will get removed
+except the plain stub:
+```json
+{
+  "_id": "mydoc",
+  "_rev": "2-def",
+  "_deleted": true
+}
+```
+
+
+
