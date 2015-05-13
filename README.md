@@ -1,6 +1,7 @@
 # CouchDB Best Practices
 Collect best practices around the CouchDB universe.
 
+
 **:warning: Currently this document is in a structure less, append only.**
 
 * [Creating Admin User](#creating-admin-user)
@@ -656,15 +657,15 @@ the documents together. That way you don't even need a view to fetch them togeth
 ```json
 [
   {
-    "_id": artist/tom-waits/album/closing-time",
+    "_id": "artist/tom-waits/album/closing-time",
     "title": "Closing Time"
   }
   {
-    "_id": artist/tom-waits/album/rain-dogs",
+    "_id": "artist/tom-waits/album/rain-dogs",
     "title": "Rain Dogs"
   }
   {
-    "_id": artist/tom-waits/album/real-gone",
+    "_id": "artist/tom-waits/album/real-gone",
     "title": "Real Gone"
   }
 ]
