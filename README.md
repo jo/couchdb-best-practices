@@ -42,8 +42,7 @@ Collect best practices around the CouchDB universe.
 ### Creating Admin User
 First thing to do is setup the user accout
 
-* Go to [http://localhost:5984/_utils/](http://localhost:5984/_utils) in your
-* web browser
+* Go to [http://localhost:5984/_utils/](http://localhost:5984/_utils) in your web browser
 * Click on `Setup more admins` in the bottom right hand corner of the sidebar
 * Enter a username + password (this will be the root admin of your CouchDB)
 * Click on `Logout` which is also in bottom right had corner
@@ -55,8 +54,7 @@ actually use this account to do things, so proceed!
 ### Creating User
 To create a non admin user, follow these steps:
 
-* While still on `http://localhost:5984/_utils/` in your browser (and logged
-* out)
+* While still on `http://localhost:5984/_utils/` in your browser (and logged out)
 * Click on `Signup` in the bottom right of the sidebar
 * Enter username + password
 
@@ -208,6 +206,7 @@ from the constituting ids to make it easy to delete a relation.
 
 
 Now write a map function like this:
+
 ```js
 function(doc) {
   if (!doc._id.match(/^friendship\//)) return
@@ -222,6 +221,7 @@ function(doc) {
 ```
 
 You now can query the view for one person:
+
 ```js
 {
   include_docs: true
@@ -231,6 +231,7 @@ You now can query the view for one person:
 ```
 
 and get all friends of that person:
+
 ```json
 {
   "total_rows" : 4,
@@ -275,6 +276,7 @@ and get all friends of that person:
 ### Do Not Emit Entire Docs
 You can query a view with `include_docs=true`. Then in the view result every row has
 the whole doc included:
+
 ```json
 {
   "rows": [
@@ -304,6 +306,7 @@ CouchDB (and PouchDB) supports [linked
 documents](https://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Linked_documents).
 Use them to join two types of documents together, by simply adding an `_id` to the
 emitted value:
+
 ```js
 function map(doc) {
   // join artist data to albums
@@ -318,7 +321,9 @@ db.query(map, {
   include_docs: true
 })
 ```
+
 And this is a result:
+
 ```json
 {
   "rows": [
@@ -355,6 +360,7 @@ And this is a result:
   ]
 }
 ```
+
 Using linked documents can be a way to group together related data.
 
 
@@ -363,6 +369,7 @@ CouchDB has some build in reduce functions to accomplish common tasks. They are
 native and very performant. Choose them wherever possible.
 To use a built in reduce, insert the name string instead of the function code,
 eg
+
 ```json
 {
   "views": {
@@ -384,6 +391,7 @@ Counts the number of emitted values.
 Calculates some numerical statistics on your emitted values, which must be
 numbers.
 For example:
+
 ```json
 {
   "sum": 80,
@@ -404,6 +412,7 @@ can write view code in your preferred editor and watch the results in real time.
 ### Testing Views
 Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a a simple
 CouchDB design doc testing tool.
+
 ```js
 var DDocTest = require('couchdb-ddoc-test')
 var test = new DDocTest({
@@ -445,6 +454,7 @@ Please keep the version in mind. Some features are not supported, for example
 the assignment of a function, like `module.exports = function() {}`.
 
 Take this example:
+
 ```js
 {
   views: {
@@ -480,6 +490,7 @@ Take this example:
   }
 }
 ```
+
 CommonJS modules can also be used for shows, lists and validate\_doc\_update
 functions.
 Note that the `person` module is inside the `views` object. This is needed for
@@ -512,6 +523,7 @@ Collation](https://docs.couchdb.org/en/latest/couchapp/views/collation.html)
 
 ### Group Level
 Consider the follwing documents
+
 ```json
 [
   { "_id": "1", "date": "2014-05-01T00:00:00.000Z", "temperature": -10.00 },
@@ -525,6 +537,7 @@ Consider the follwing documents
 ```
 
 And the map function:
+
 ```js
 function(doc) {
   var date = new Date(doc.date)
@@ -542,6 +555,7 @@ function(doc) {
 And the build in reduce function `_stats`.
 
 When you not query the view you get the stats over all entries:
+
 ```json
 {
   "rows" : [
@@ -560,6 +574,7 @@ When you not query the view you get the stats over all entries:
 ```
 
 `group_level=7` gives you
+
 ```json
 {
    "rows" : [
@@ -592,6 +607,7 @@ When you not query the view you get the stats over all entries:
 ```
 
 Upto `group_level=7` (which is the same as `group=true`)
+
 ```json
 {
    "rows" : [
@@ -648,17 +664,20 @@ by a set of properties. An idea in this case is to name them like this:
 
 The main grouping parameter for the name is the “object” as it (roughly) exists
 in the application space. For example: `person`, `contact`, `address` etc.:
+
 ```
 <object>-
 ```
 
 What follows is a condition for a subset of objects, e.g. `persons-with-address`:
+
 ```
 <object>-with-<property>
 <object>-with-no-<property>
 ```
 
 Then, there is a sort option, e.g. `persons-with-address-by-createddate`:
+
 ```
 <option>-with-<property>-by-<sortfield>
 ```
@@ -667,6 +686,7 @@ Then, there is a sort option, e.g. `persons-with-address-by-createddate`:
 
 Finally, there is an optional suffix that descibes whether the view emits the
 full document as a value, e.g. `persons-with-address-fulldoc`: 
+
 ```
 <object>-with-<property>-fulldoc
 ```
@@ -678,16 +698,19 @@ cases to lowercase. Convert underscore separated to no separation.
 
 ##### Examples
 All people documents:
+
 ```
 people
 ```
 
 All cases sorted by doc.lastModifiedDate:
+
 ```
 cases-by-lastmodifieddate
 ```
 
 All addresses that have a city property sortedby `doc.createdDate`:
+
 ```
 address-with-city-by-createddate
 ```
@@ -695,11 +718,13 @@ address-with-city-by-createddate
 #### With a reduce function
 In this case, i would use the same convention, with a prefix expressing the reduce.
 The reduce part could be structured as follows:
+
 ```
 [count|sum|stats]-[on-<property>-]<map part>
 ```
 
 ##### Examples
+
 ```
 stats-on-patient-age-by-case-status
 ```
@@ -736,6 +761,7 @@ Use `_replicator` database when in doubt.
 ###### `_replicate` API endpoint
 When you use Futon you use the replicator endpoint. To initiate a replication
 post a json:
+
 ```json
 {
   "source": "a-db",
@@ -743,15 +769,19 @@ post a json:
   "continuous": true
 }
 ```
+
 The response includes a replication id (which can also be optained from
 `_active_tasks`):
+
 ```json
 {
   "ok": true,
   "_local_id": "0a81b645497e6270611ec3419767a584+continuous"
 }
 ```
+
 Having this id you can cancel a continuous replication by posting
+
 ```json
 {
   "replication_id": "0a81b645497e6270611ec3419767a584+continuous",
@@ -764,6 +794,7 @@ to the `_replicate` endpoint.
 Replications created via the `_replicator` database are persisted and survive a
 server restart. Its just a normal database which means you have the default
 operations. Replications are initiated by creating replication documents:
+
 ```json
 {
   "_id": "initial-replication/a-db/another-db",
@@ -820,6 +851,7 @@ Or you can replicate to a local CouchDB and debug your views there.
 
 If you like PouchDB to be more verbose, [enable debug
 output](http://pouchdb.com/api.html#debug_mode):
+
 ```js
 PouchDB.debug.enable('*')
 ```
@@ -849,6 +881,7 @@ the latter.
 ### Two Ways of Deleting Documents
 There are two ways to delete a document: via DELETE or by updating the document
 with a `_deleted` property set to true:
+
 ```json
 {
   "_id": "mydoc",
@@ -864,6 +897,7 @@ compactation. (That way the deletion can be propagated to all replicas.)
 Using the manual variant allows you to keep data, which might be useful for
 filtered replication or other purposes. Otherwise all properties will get removed
 except the plain stub:
+
 ```json
 {
   "_id": "mydoc",
