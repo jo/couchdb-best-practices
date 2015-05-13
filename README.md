@@ -816,8 +816,8 @@ database](https://gist.github.com/fdmanana/832610).
 
 ### Conflict Handling
 Some things need to and should be conflicts. CouchDB *conflicts are first class
-citicens*, (or at least [should be treaded
-so](https://gist.github.com/rnewson/2387973#file-gistfile1-txt-L6)). If 2
+citizens*, (or at least [should be treated
+as such](https://gist.github.com/rnewson/2387973#file-gistfile1-txt-L6)). If 2
 different users enter different addresses for the same person at the same time,
 that probably should create a conflict. Your best option is to have a conflict
 resolution daemon running on the server. While we don’t have this at the moment,
