@@ -677,10 +677,19 @@ cases to lowercase. Convert underscore separated to no separation.
 
 
 ##### Examples
+All people documents:
 ```
-people // all people documents
-cases-by-lastmodifieddate // all cases sorted by doc.lastModifiedDate
-address-with-city-by-createddate // all addresses that have a city property sortedby doc.createdDate
+people
+```
+
+All cases sorted by doc.lastModifiedDate:
+```
+cases-by-lastmodifieddate
+```
+
+All addresses that have a city property sortedby `doc.createdDate`:
+```
+address-with-city-by-createddate
 ```
 
 #### With a reduce function
