@@ -637,7 +637,7 @@ Upto `group_level=7` (which is the same as `group=true`)
 Combining this with key or range queries you can get all sort of fine graned stats.
 
 
-### Naming Conventions
+### Naming Conventions For Views
 Naming convention for views, starting from the basic case of no reduce functions.
 Views are couples of arbitrary functions, and as such it is impossible to express
 their whole variety with a name, so i am just trying to cover the most common cases.
