@@ -118,7 +118,9 @@ There is no way to [control access on a per document
 level](https://wiki.apache.org/couchdb/PerDocumentAuthorization).
 
 A common solution is to have a database per user.  
+
 To create the dbs, you need to install a daemon. There are different projects:
+
 * [couchperuser](https://github.com/etrepum/couchperuser) (Erlang, donated to Apache CouchDB)
 * [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning) (Node)
 
@@ -906,5 +908,6 @@ except the plain stub:
 }
 ```
 
+---
 
-
+(c) 2015 by Johannes Jörg Schmidt for eHealth Afrika under Apache 2.0 License.
