@@ -2,7 +2,7 @@
 Collect best practices around the CouchDB universe.
 
 
-**:warning: Currently this document is in a structure less, append only.**
+**:warning: Currently this document is in a structure less, append only mode.**
 
 * [Creating Admin User](#creating-admin-user)
 * [Creating User](#creating-user)
