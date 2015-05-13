@@ -381,13 +381,13 @@ eg
 }
 ```
 
-###### `_sum`
+#### `_sum`
 Adds up the emitted values, which must be numbers.
 
-###### `_count`
+#### `_count`
 Counts the number of emitted values.
 
-###### `_stats`
+#### `_stats`
 Calculates some numerical statistics on your emitted values, which must be
 numbers.
 For example:
@@ -758,7 +758,7 @@ There are two ways to start a replication: the `_replicator` database and the
 `_replicate` API endpoint.
 Use `_replicator` database when in doubt.
 
-###### `_replicate` API endpoint
+#### `_replicate` API endpoint
 When you use Futon you use the replicator endpoint. To initiate a replication
 post a json:
 
@@ -790,7 +790,7 @@ Having this id you can cancel a continuous replication by posting
 ```
 to the `_replicate` endpoint.
 
-###### `_replicator` Database
+#### `_replicator` Database
 Replications created via the `_replicator` database are persisted and survive a
 server restart. Its just a normal database which means you have the default
 operations. Replications are initiated by creating replication documents:
@@ -866,12 +866,12 @@ wraps PouchDBs promises with Angulars `$q`s.
 While basic full text search is possible just by using views, its not
 convenient and you should make use of a dedicated FTI.
 
-###### Client Side
+#### Client Side
 For PouchDB the situation is clear: Use [PouchDB Quick
 Search](https://github.com/nolanlawson/pouchdb-quick-search). Its a PouchDB
 plugin based on [lunr.js](http://lunrjs.com/).
 
-###### Server Side
+#### Server Side
 On a CouchDB server you have options: Lucene (via
 [couchdb-lucene](http://github.com/rnewson/couchdb-lucene)) or ElasticSearch via
 [The River](https://www.elastic.co/blog/the-river/). At eHealth Africa we use
