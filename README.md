@@ -910,9 +910,8 @@ except the plain stub:
 
 ---
 
-© 2015 [Johannes Jörg Schmidt][jo] (and [contributors][]) for [eHealth Africa][eha], released under the [Apache 2.0 License][license].
+© 2015 [eHealth Africa][eha]. Written by [contributors](). Released under the [Apache 2.0 License][license].
 
-[jo]: https://github.com/jo
 [eha]: http://ehealthafrica.org
 [contributors]: https://github.com/eHealthAfrica/couchdb-best-practices/graphs/contributors
 [license]: https://www.apache.org/licenses/LICENSE-2.0.html
