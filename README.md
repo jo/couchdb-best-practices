@@ -451,42 +451,39 @@ views or simply break your code into smaller modules. For that purpose CouchDB
 has [support for CommonJS
 modules](http://docs.couchdb.org/en/1.6.1/query-server/javascript.html?highlight=commonjs#commonjs-modules),
 which you know from node.
-CouchDB implements [CommonJS 1.1](http://wiki.commonjs.org/wiki/Modules/1.1).
-Please keep the version in mind. Some features are not supported, for example
-the assignment of a function, like `module.exports = function() {}`.
+CouchDB implements [CommonJS 1.1.1](http://wiki.commonjs.org/wiki/Modules/1.1.1).
 
 Take this example:
 
 ```js
-{
+var person = function(doc) {
+  if (!doc._id.match(/^person\//)) return
+  return {
+    name: doc.firstname + ' ' + doc.lastname,
+    createdAt: new Date(doc.created_at)
+  }
+}
+
+var ddoc = {
+  _id: '_design/person',
   views: {
     lib: {
-      {
-        models: "                                   \
-          exports.person = function(doc) {           \
-            if (!doc._id.match(/^person\//)) return   \
-            return {                                   \
-              name: doc.firstname + ' ' + doc.lastname, \
-              createdAt: Date.parse(doc.created_at)      \
-            }                                             \
-          }                                                \
-        "
-      }
+      person: "module.exports = " + person.toString()
     },
     'people-by-name': {
       map: function(doc) {
-        var person = require('views/lib/models').person(doc)
+        var person = require('views/lib/person')(doc)
         if (!person) return
         emit(person.name, null)
-      },
+      }.toString(),
       reduce: '_count'
     },
     'people-by-created-at': {
       map: function(doc) {
-        var person = require('views/lib/models').person(doc)
+        var person = require('views/lib/person')(doc)
         if (!person) return
         emit(person.createdAt.getTime(), null)
-      },
+      }.toString(),
       reduce: '_count'
     }
   }
@@ -498,6 +495,8 @@ functions.
 Note that the `person` module is inside the `views` object. This is needed for
 CouchDB in order to detect changes on the view code.
 Reduce functions *can NOT* use modules.
+
+Read more about [CommonJS modules in CouchDB](http://caolanmcmahon.com/posts/commonjs_modules_in_couchdb/).
 
 
 ### View Collation
