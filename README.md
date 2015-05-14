@@ -910,7 +910,7 @@ except the plain stub:
 
 ---
 
-© 2015 [eHealth Africa][eha]. Written by [contributors](). Released under the [Apache 2.0 License][license].
+© 2015 [eHealth Africa][eha]. Written by [contributors][]. Released under the [Apache 2.0 License][license].
 
 [eha]: http://ehealthafrica.org
 [contributors]: https://github.com/eHealthAfrica/couchdb-best-practices/graphs/contributors
