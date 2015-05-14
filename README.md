@@ -863,6 +863,14 @@ To use PouchDB with AngularJS you should use
 [angular-pouchdb](https://github.com/angular-pouchdb/angular-pouchdb), which
 wraps PouchDBs promises with Angulars `$q`s.
 
+Debugging angular-pouchdb in a console can be done by first retrieving the
+injector and calling the `pouchDB` service as normal, e.g.:
+
+```js
+var pouchDB = angular.element(document.body).injector().get('pouchDB');
+var db = pouchDB('mydb');
+db.get('id').then();
+```
 
 ### Full Text Search
 While basic full text search is possible just by using views, its not
