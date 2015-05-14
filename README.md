@@ -60,7 +60,7 @@ To create a non admin user, follow these steps:
 
 
 ### Change Password
-Since CouchDB 1.2 updating the user password has become much easyer:
+Since CouchDB 1.2 updating the user password has become much easier:
 
 1. Request the user doc: `GET /_users/org.couchdb.user:a-username`
 2. Set a `password` property with the password
