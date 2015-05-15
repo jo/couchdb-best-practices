@@ -40,7 +40,7 @@ Collect best practices around the CouchDB universe.
 
 ## User Management
 ### Creating Admin User
-First thing to do is setup the user accout
+First thing to do is setup the user account
 
 * Go to [http://localhost:5984/_utils/](http://localhost:5984/_utils) in your web browser
 * Click on `Setup more admins` in the bottom right hand corner of the sidebar
