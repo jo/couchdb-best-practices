@@ -203,7 +203,7 @@ Similar to 1:N relations but use extra documents which describes each relation:
 ```
 
 Note how we used a deterministic order of friends in the id, we just sorted them
-alphabetically. Its important to be able to derivate the freiendship document id
+alphabetically. Its important to be able to derivate the friendship document id
 from the constituting ids to make it easy to delete a relation.
 
 
