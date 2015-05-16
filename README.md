@@ -140,7 +140,7 @@ the documents together. That way you don't even need a view to fetch them togeth
 
 ```json
 {
-  "_id": "artist/tom-waits",
+  "_id": "artist:tom-waits",
   "name": "Tom Waits"
 }
 ```
@@ -148,15 +148,15 @@ the documents together. That way you don't even need a view to fetch them togeth
 ```json
 [
   {
-    "_id": "artist/tom-waits/album/closing-time",
+    "_id": "artist:tom-waits:album:closing-time",
     "title": "Closing Time"
   }
   {
-    "_id": "artist/tom-waits/album/rain-dogs",
+    "_id": "artist:tom-waits:album:rain-dogs",
     "title": "Rain Dogs"
   }
   {
-    "_id": "artist/tom-waits/album/real-gone",
+    "_id": "artist:tom-waits:album:real-gone",
     "title": "Real Gone"
   }
 ]
@@ -166,7 +166,7 @@ Now you can use the built-in `_all_docs` view to query the artist and all of its
 albums together:
 
 ```sh
-curl $db/_all_docs?startkey="artist/tom-waits"&endkey="artist/tom-waits/\ufff0"
+curl $db/_all_docs?startkey="artist:tom-waits"&endkey="artist:tom-waits:\ufff0"
 ```
 
 ### N To N Relations
@@ -175,15 +175,15 @@ Similar to 1:N relations but use extra documents which describes each relation:
 ```json
 [
   {
-    "_id": "person/avery-mcdonalid",
+    "_id": "person:avery-mcdonalid",
     "name": "Avery Mcdonalid"
   },
   {
-    "_id": "person/troy-howell",
+    "_id": "person:troy-howell",
     "name": "Troy Howell"
   },
   {
-    "_id": "person/tonya-payne",
+    "_id": "person:tonya-payne",
     "name": "Tonya Payne"
   }
 ]
@@ -192,11 +192,11 @@ Similar to 1:N relations but use extra documents which describes each relation:
 ```json
 [
   {
-    "_id": "friendship/person/avery-mcdonalid/with/person/troy-howell",
+    "_id": "friendship:person:avery-mcdonalid:with:person:troy-howell",
     "since": "2015-05-13T08:57:53.786Z"
   },
   {
-    "_id": "friendship/person/avery-mcdonalid/with/person/tonya-payne",
+    "_id": "friendship:person:avery-mcdonalid:with:person:tonya-payne",
     "since": "2015-03-02T07:21:01.123Z"
   }
 ]
@@ -211,9 +211,9 @@ Now write a map function like this:
 
 ```js
 function(doc) {
-  if (!doc._id.match(/^friendship\//)) return
+  if (!doc._id.match(/^friendship:/)) return
   
-  var ids = doc._id.match(/person\/([^/]*)/g)
+  var ids = doc._id.match(/person:([^:]*)/g)
   var one = ids[0]
   var two = ids[1]
 
@@ -227,8 +227,8 @@ You now can query the view for one person:
 ```js
 {
   include_docs: true
-  startkey: ["person/avery-mcdonalid"]
-  endkey: ["person/avery-mcdonalid", {}]
+  startkey: ["person:avery-mcdonalid"]
+  endkey: ["person:avery-mcdonalid", {}]
 }
 ```
 
@@ -242,31 +242,31 @@ and get all friends of that person:
       "doc" : {
         "name" : "Tonya Payne",
         "_rev" : "1-7aafe790e8f4f00220c699e966246421",
-        "_id" : "person/tonya-payne"
+        "_id" : "person:tonya-payne"
       },
       "value" : {
-        "_id" : "person/tonya-payne"
+        "_id" : "person:tonya-payne"
       },
-      "id" : "friendship/person/avery-mcdonalid/with/person/tonya-payne",
+      "id" : "friendship:person:avery-mcdonalid:with:person:tonya-payne",
       "key" : [
-        "person/avery-mcdonalid",
-        "person/tonya-payne"
+        "person:avery-mcdonalid",
+        "person:tonya-payne"
       ]
     },
     {
       "value" : {
-        "_id" : "person/troy-howell"
+        "_id" : "person:troy-howell"
       },
       "doc" : {
         "_rev" : "1-7e0328a9eb72a5544663c30052c67161",
-        "_id" : "person/troy-howell",
+        "_id" : "person:troy-howell",
         "name" : "Troy Howell"
       },
       "key" : [
-        "person/avery-mcdonalid",
-        "person/troy-howell"
+        "person:avery-mcdonalid",
+        "person:troy-howell"
       ],
-      "id" : "friendship/person/avery-mcdonalid/with/person/troy-howell"
+      "id" : "friendship:person:avery-mcdonalid:with:person:troy-howell"
     }
   ],
   "offset" : 0
@@ -457,7 +457,7 @@ Take this example:
 
 ```js
 var person = function(doc) {
-  if (!doc._id.match(/^person\//)) return
+  if (!doc._id.match(/^person:/)) return
   return {
     name: doc.firstname + ' ' + doc.lastname,
     createdAt: new Date(doc.created_at)
@@ -798,7 +798,7 @@ operations. Replications are initiated by creating replication documents:
 
 ```json
 {
-  "_id": "initial-replication/a-db/another-db",
+  "_id": "initial-replication:a-db:another-db",
   "source": "a-db",
   "target": "another-db",
   "continuous": true
