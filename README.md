@@ -2,6 +2,8 @@
 Collect best practices around the CouchDB universe.
 
 
+* [Basics](#basics)
+  * [Reserved Properties, IDs and Revisions](#reserved-properties,-ids-and-revisions)
 * [User Management](#user-management)
   * [Creating Admin User](#creating-admin-user)
   * [Creating User](#creating-user)
@@ -37,6 +39,33 @@ Collect best practices around the CouchDB universe.
   * [PouchDB and AngularJS](#pouchdb-and-angularjs)
   * [Full Text Search](#full-text-search)
   * [Two Ways of Deleting Documents](#two-ways-of-deleting-documents)
+
+
+## Basics
+> Apache CouchDB™ is a database that uses JSON for documents, JavaScript for
+MapReduce indexes, and regular HTTP for its API.
+
+Website: [couchdb.apache.org](http://couchdb.apache.org/)  
+Docs: [docs.couchdb.org](http://docs.couchdb.org/en/1.6.1/)  
+Blog: [blog.couchdb.org](http://blog.couchdb.org/)  
+Old Wiki: [wiki.apache.org](https://wiki.apache.org/couchdb/)  
+New Wiki: [cwiki.apache.org](https://cwiki.apache.org/confluence/display/COUCHDB/Apache+CouchDB+Wiki)  
+User List: [user@couchdb.apache.org](http://mail-archives.apache.org/mod_mbox/couchdb-user/)  
+Github: [apache/couchdb](https://github.com/apache/couchdb)  
+IRC: [irc.freenode.net/couchdb](irc://irc.freenode.net/couchdb)  
+
+### Reserved Properties, IDs and Revisions
+Any top-level fields within a JSON document containing a name that starts with a
+`_` prefix are reserved for use by CouchDB itself.
+
+If you don't specify an `_id` CouchDB will create one for you. You can configure
+in `uuids/algorithm` which algorithm will be used: `random`, `sequential` or
+`utc_random`.
+
+Document revisions are used for optimistic concurrency control. If you try to
+update a document using an old revision the update will be in conflict. These
+conflicts should be resolved by your client, usually by requesting the newest
+version of the document, modifying and trying the update again. 
 
 
 ## User Management
