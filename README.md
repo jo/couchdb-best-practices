@@ -75,12 +75,17 @@ function for your convenience.
 ## Document Modeling
 
 ### Embrace the Document ID
+In CouchDB ids can be arbitrary strings. Make use of this!
+
 Before deciding on using a random value as doc `_id`, read the section [When not
 to use map
 reduce](http://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html)
 
 *Use domain specific document ids* where possible. With CouchDB it is best
 practice to use meaningful ids.
+
+You can use the tiny [to-id](https://github.com/gr2m/to-id) module to normalize
+names, titles and other properties for use as id.
 
 When splitting documents into different subdocuments I often include the parent
 document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
@@ -93,6 +98,22 @@ you to not use slashes in document ids. Thats the reason we use colons here.
 
 Note that you have to encode the document id, when used in an url, but you should
 do that anyway.
+
+#### Use document ids to enforce uniqueness
+The only way to enforce something is unique is to include it in the document id.
+
+For example, in the *\_users* database the username is part of the id:
+```json
+{
+  "_id": "org.couchdb.user:jo@die-tf.de",
+  "_rev": "1-64db269b26ed399733beb259d1a31304",
+  "name": "jo@die-tf.de",
+  "type": "user"
+}
+```
+
+If you need multiple independend unique properties per document you can create
+_reserve documents_ for those properties.
 
 
 ### Document Modeling to Avoid Conflicts
