@@ -7,8 +7,8 @@ Collect best practices around the CouchDB universe.
   * [Creating User](#creating-user)
   * [Change Password](#change-password)
 * [Document Modelling](#document-modeling)
+  * [Embrace the Document ID](#embrace-the-document-id)
   * [Document Modeling To Avoid Conflicts](#document-modeling-to-avoid-conflicts)
-  * [Your Document ID Is The Best Index](#your-document-id-is-the-best-index)
   * [Data Migrations](#data-migrations)
   * [Per Document Access Control](#per-document-access-control)
   * [One To N Relations](#one-to-n-relations)
@@ -74,19 +74,7 @@ function for your convenience.
 
 ## Document Modeling
 
-### Document Modeling to Avoid Conflicts
-At the moment of writing, most of our data documents are modeled as ‘one big
-document’. This is not according to CouchDB best practice. *Split data into many
-small documents* depending on how often and when data changes.  That way, you can
-avoid conflicts and conflict resolution by just appending new documents to the
-database. Its often a good idea to have many small documents versus less big
-documents. As a guideline on how to model documents *think about when data
-changes*. Data that changes together, belongs in a document. Modelling documents
-this way a) avoids conflicts and b) keeps the number of revisions low, which
-improves replication performance and uses less storage.
-
-
-### Your Document ID is the Best Index
+### Embrace the Document ID
 Before deciding on using a random value as doc `_id`, read the section [When not
 to use map
 reduce](http://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html)
@@ -97,6 +85,26 @@ practice to use meaningful ids.
 When splitting documents into different subdocuments I often include the parent
 document id in the id. Use [docuri](https://github.com/jo/docuri/) to centralize
 document id knowledge.
+
+#### A note about `/` in document ids
+*Slashes are totally fine in document ids* and widely used. However, a specific
+deployment setup (nginx proxy with subdirectory rewrite) might require
+you to not use slashes in document ids. Thats the reason we use colons here.
+
+Note that you have to encode the document id, when used in an url, but you should
+do that anyway.
+
+
+### Document Modeling to Avoid Conflicts
+At the moment of writing, most of our data documents are modeled as ‘one big
+document’. This is not according to CouchDB best practice. *Split data into many
+small documents* depending on how often and when data changes.  That way, you can
+avoid conflicts and conflict resolution by just appending new documents to the
+database. Its often a good idea to have many small documents versus less big
+documents. As a guideline on how to model documents *think about when data
+changes*. Data that changes together, belongs in a document. Modelling documents
+this way a) avoids conflicts and b) keeps the number of revisions low, which
+improves replication performance and uses less storage.
 
 
 ### Data Migrations
