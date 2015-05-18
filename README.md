@@ -171,10 +171,14 @@ the documents together. That way you don't even need a view to fetch them togeth
 ```
 
 Now you can use the built-in `_all_docs` view to query the artist and all of its
-albums together:
+albums together, using start- and endkey:
 
-```sh
-curl $db/_all_docs?startkey="artist:tom-waits"&endkey="artist:tom-waits:\ufff0"
+```json
+{
+  "include_docs": true,
+  "startkey": "artist:tom-waits",
+  "endkey": "artist:tom-waits:\ufff0"
+}
 ```
 
 ### N To N Relations
@@ -232,11 +236,11 @@ function(doc) {
 
 You now can query the view for one person:
 
-```js
+```json
 {
-  include_docs: true
-  startkey: ["person:avery-mcdonalid"]
-  endkey: ["person:avery-mcdonalid", {}]
+  "include_docs": true,
+  "startkey": ["person:avery-mcdonalid"],
+  "endkey": ["person:avery-mcdonalid", {}]
 }
 ```
 
@@ -318,18 +322,22 @@ Use them to join two types of documents together, by simply adding an `_id` to t
 emitted value:
 
 ```js
+// join artist data to albums
 function map(doc) {
-  // join artist data to albums
-  if (doc.type === 'album') {
-    emit([doc._id, 'album'], null)
-    emit([doc._id, 'artist'], { _id : doc.artistId })
+  if (doc._id.match(/^album:/) {
+    emit(doc._id, null)
+    emit(doc._id, { _id : doc.artistId })
   }
 }
-// query an album
-db.query(map, {
-  key: 'hunkydory',
-  include_docs: true
-})
+```
+
+When you query the view with the id of an album:
+
+```json
+{
+  "include_docs": true,
+  "key": "album:hunkydory"
+}
 ```
 
 And this is a result:
@@ -339,32 +347,23 @@ And this is a result:
   "rows": [
     {
       "doc": {
-        "_id": "hunkydory",
+        "_id": "album:hunkydory",
         "title": "Hunky Dory",
         "year": 1971
       },
-      "id": "hunkydory",
-      "key": [
-        "hunkydory",
-        "album"
-      ],
-      "value": {
-        "_id": "bowie"
-      }
+      "id": "album:hunkydory",
+      "key": "album:hunkydory"
     }
     {
       "doc": {
-        "_id": "bowie",
+        "_id": "artist:david-bowie",
         "firstName": "David",
         "lastName": "Bowie"
       },
-      "id": "hunkydory",
-      "key": [
-        "hunkydory",
-        "artist"
-      ],
+      "id": "artist:david-bowie",
+      "key": "album:hunkydory",
       "value": {
-        "_id": "bowie"
+        "_id": "artist:david-bowie"
       }
     }
   ]
