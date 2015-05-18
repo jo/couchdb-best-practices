@@ -14,6 +14,7 @@ Collect best practices around the CouchDB universe.
   * [Document Validations](#document-validations)
   * [Data Migrations](#data-migrations)
   * [Per Document Access Control](#per-document-access-control)
+  * [Useful Meta Keys](#useful-meta-keys)
   * [One To N Relations](#one-to-n-relations)
   * [N To N Relations](#n-to-n-relations)
 * [Views](#views)
@@ -221,6 +222,22 @@ To create the dbs, you need to install a daemon. There are different projects:
 An other way to achive per document access control, even on a per field basis, is
 to use encryption. [crypto-pouch](https://github.com/calvinmetcalf/crypto-pouch)
 and [pouch-box](https://github.com/jo/pouch-box) might help.
+
+
+### Useful Meta Keys
+In documents some information is generally useful. Rails, for example, inserts
+timestamps per default.:
+
+* `created_at`: Date of creation
+* `updated_at`: Date of last update
+* `created_by`: Username of creator
+* `updated_by`: Username of last updater
+* `type`: Document type
+* `version`: Document schema version
+
+You can add validations, which takes care that those fields are set. Nonetheless
+you cannot guarantee that dates are correct - just that they are in the right
+format.
 
 
 ### One To N Relations
