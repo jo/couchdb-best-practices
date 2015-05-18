@@ -843,9 +843,9 @@ So, for example, if you request
 `http://my.couch.behind.nginx.com/mydb/foo%2Fbar` it gets routed to CouchDB as
 `/mydb/foo/bar`, which is not what we want.
 
-We can configure this mad behaviour away by [not appending a slash to the
+We can configure this mad behaviour away (by [not appending a slash to the
 `proxy_pass`
-target[(http://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds).
+target](http://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds)).
 But there is no way to convince nginx not messing with the url when rewriting
 the proxy behind a subdirectory, eg
 `http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
