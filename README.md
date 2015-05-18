@@ -106,6 +106,7 @@ do that anyway.
 The only way to enforce something is unique is to include it in the document id.
 
 For example, in the *\_users* database the username is part of the id:
+
 ```json
 {
   "_id": "org.couchdb.user:jo@die-tf.de",
