@@ -77,6 +77,9 @@ function for your convenience.
 ### Embrace the Document ID
 In CouchDB ids can be arbitrary strings. Make use of this!
 
+The id cannot be changed afterwards, instead you can move a document via COPY
+and DELETE.
+
 Before deciding on using a random value as doc `_id`, read the section [When not
 to use map
 reduce](http://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html)
