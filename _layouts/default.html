@@ -10,8 +10,8 @@
     font-family: "HelveticaNeue-Light", Helvetica, Arial, sans-serif;
     font-size: 16pt;
     line-height: 3ex;
-    margin: 6.18% 10%;
-    padding-top: 3ex;
+    margin: 3ex 0 0 0;
+    padding: 6.18% 10%;
   }
   body, a {
     color: #291D1E;
@@ -24,7 +24,6 @@
     max-width: 42em;
   }
   h2 {
-    margin-top: 3ex;
     padding-top: 6ex;
   }
   h3 {
@@ -79,4 +78,14 @@
   <a href=https://github.com/eHealthAfrica/couchdb-best-practices/issues>Ask</a>
   <a href=https://github.com/eHealthAfrica/couchdb-best-practices>Fork</a>
 </p>
-{{ content }}
+<main>
+  {{ content }}
+</main>
+<script src=js/anchor.min.js></script>
+<script>
+  anchors.options = {
+    placement: 'left'
+  }
+  anchors.add('main h2, main h3, main h4, main h4, main h5')
+  anchors.remove('h2 + h3')
+</script>
