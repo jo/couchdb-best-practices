@@ -1010,8 +1010,9 @@ except the plain stub:
 
 ---
 
-© 2015 [eHealth Africa][eha]. Written by [contributors][]. Released under the [Apache 2.0 License][license].
+© 2015 [eHealth Africa][eha]. Written by [TF][] and [contributors][]. Released under the [Apache 2.0 License][license].
 
 [eha]: http://ehealthafrica.org
+[TF]: https://www.die-tf.de
 [contributors]: https://github.com/eHealthAfrica/couchdb-best-practices/graphs/contributors
 [license]: https://www.apache.org/licenses/LICENSE-2.0.html
