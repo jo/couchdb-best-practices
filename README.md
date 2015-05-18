@@ -15,6 +15,7 @@ Collect best practices around the CouchDB universe.
   * [Data Migrations](#data-migrations)
   * [Per Document Access Control](#per-document-access-control)
   * [Useful Meta Keys](#useful-meta-keys)
+  * [A Note on Dates](#a-note-on-dates)
   * [One To N Relations](#one-to-n-relations)
   * [N To N Relations](#n-to-n-relations)
 * [Views](#views)
@@ -238,6 +239,20 @@ timestamps per default.:
 You can add validations, which takes care that those fields are set. Nonetheless
 you cannot guarantee that dates are correct - just that they are in the right
 format.
+
+
+### A Note on Dates
+When saving dates, just store them as strings, created by `JSON.stringify()`.
+That way the dates can be easily consumed by `new Date`:
+
+```js
+var date = new Date()
+// Mon May 18 2015 16:50:52 GMT+0200 (CEST)
+var datestring = date.toJSON()
+// '2015-05-18T14:50:52.018Z'
+new Date(datestring)
+// Mon May 18 2015 16:50:52 GMT+0200 (CEST)
+```
 
 
 ### One To N Relations
