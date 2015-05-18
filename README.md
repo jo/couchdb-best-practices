@@ -9,6 +9,7 @@ Collect best practices around the CouchDB universe.
 * [Document Modelling](#document-modeling)
   * [Embrace the Document ID](#embrace-the-document-id)
   * [Document Modeling To Avoid Conflicts](#document-modeling-to-avoid-conflicts)
+  * [Document Validations](#document-validations)
   * [Data Migrations](#data-migrations)
   * [Per Document Access Control](#per-document-access-control)
   * [One To N Relations](#one-to-n-relations)
@@ -116,9 +117,6 @@ For example, in the *\_users* database the username is part of the id:
 }
 ```
 
-If you need multiple independend unique properties per document you can create
-_reserve documents_ for those properties.
-
 
 ### Document Modeling to Avoid Conflicts
 At the moment of writing, most of our data documents are modeled as ‘one big
@@ -130,6 +128,40 @@ documents. As a guideline on how to model documents *think about when data
 changes*. Data that changes together, belongs in a document. Modelling documents
 this way a) avoids conflicts and b) keeps the number of revisions low, which
 improves replication performance and uses less storage.
+
+
+### Document Validations
+To enforce a certain document schema use [Validate document update
+functions](http://docs.couchdb.org/en/1.6.1/couchapp/ddocs.html#vdufun).
+
+On every document write (via PUT, POST, DELETE or `_bulk_docs`) the validation function,
+if present, gets called. Validation functions live in design documents in the
+special `validate_doc_update` property. You can have many validation
+functions, each in different design documents.
+If any of the validation function throws an error, the update gets rejected and
+the error message gets returned to the client.
+Note that validation is also triggered during replication causing documents to
+get rejected if they do not meet criteria defined in the target database
+validations.
+
+An example validation, which denies document deletion for non admins, look like
+this:
+
+```js
+function(newDoc, oldDoc, userCtx, secObj) {
+  if (newDoc._deleted && userCtx.roles.indexOf('_admin') === -1) {
+    throw({
+      forbidden: 'Only admins may delete user docs.'
+    })
+  }
+}
+```
+
+The document to validate and the old document gets passed to the function, along
+with a [User Context
+Object](http://docs.couchdb.org/en/1.6.1/json-structure.html#userctx-object) and
+[Security
+Object](http://docs.couchdb.org/en/1.6.1/json-structure.html#security-object)
 
 
 ### Data Migrations
