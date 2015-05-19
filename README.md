@@ -242,8 +242,10 @@ format.
 
 
 ### A Note on Dates
-When saving dates, just store them as strings, created by `JSON.stringify()`.
-That way the dates can be easily consumed by `new Date`:
+When saving dates, just store them as [ISO
+8601](http://en.wikipedia.org/wiki/ISO_8601) strings, created by
+`.toISOString()` as well as by `JSON.stringify()`. That way the dates can be
+easily consumed by `new Date` or, who prefers, parsed by `Date.parse()`:
 
 ```js
 var date = new Date()
