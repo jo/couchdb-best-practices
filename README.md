@@ -1070,7 +1070,7 @@ When you not query the view you get the stats over all entries:
 }
 ```
 
-`group_level=7` gives you
+`group_level=1` gives you
 
 ```json
 {
