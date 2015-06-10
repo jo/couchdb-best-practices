@@ -115,14 +115,14 @@ couchdb
 └── ...
 ```
 
-This folder is organized just like CouchDBs URLS: we have a `/_config` file (or
+This folder is organized just like CouchDBs URLS: we have a `/_config.json` file (or
 folder, more about that below) and `_users`, `_replicator` and custom databases.
 
 ### CouchDB Compile
 When we talk about compilation we mean the transformation of a folder into a
-document. Map functions for example need to be stored as strings in design
-documents. Design documents are just like normal documents with an id prefixed
-with `_design/`:
+CouchDB JSON document. Map functions for example need to be stored as strings in
+design documents. Design documents are just like normal documents with an id
+that is prefixed with `_design/`:
 
 ```json
 {
@@ -137,7 +137,7 @@ with `_design/`:
 
 You do not want to deal with the JSON encoding and want your view functions code
 checked into Git as *files*. Thats why the CouchDB Filesystem Mapping was
-invented. the idea is simple: Every key in the json document corresponds to a
+invented. The idea is simple: every key in the json document corresponds to a
 directory if the value is an object, otherwise to a file, which contents will
 make the value:
 
@@ -167,16 +167,15 @@ We use [Couchdb Compile](https://github.com/jo/couchdb-compile) and run
 #### JSON Files
 
 Sometimes you don't want this excessive deep nested directory tree. You can
-abbreviate by using a JSON file. `couchdb-compile` will use the name of the
-file as key (without the `.json` extension) and take the contents of that as
-value. Lets place an `package.json` file to the `myapp` directory with the following content:
+abbreviate by using a JSON file. CouchDB Compile will use the filename as key
+(without the `.json` extension) and take the contents of that as value. Lets
+place an `package.json` file in the `myapp` directory with the following
+content:
 
 ```json
 {
   "name": "My Shiny Application",
-  "version": "1.0.0",
-  "description": "My Shiny Application helps everybody to discover your brilliancy.",
-  "author": "Johannes J. Schmidt"
+  "description": "My Shiny Application helps everybody to discover your brilliancy."
 }
 ```
 
@@ -193,9 +192,7 @@ When we compile the `myapp` directory again the `package.json` file gets include
   },
   "package": {
     "name": "My Shiny Application",
-    "version": "1.0.0",
-    "description": "My Shiny Application helps everybody to discover your brilliancy.",
-    "author": "Johannes J. Schmidt"
+    "description": "My Shiny Application helps everybody to discover your brilliancy."
   }
 }
 ```
