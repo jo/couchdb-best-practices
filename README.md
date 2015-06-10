@@ -4,6 +4,13 @@ Collect best practices around the CouchDB universe.
 
 * [Basics](#basics)
   * [Reserved Properties, IDs and Revisions](#reserved-properties,-ids-and-revisions)
+* [Bootstrap](#bootstrap)
+  * [CouchDB Compile](#couchdb-compile)
+  * [Configure CouchDB](#configure-couchdb)
+  * [Create Databases](#create-databases)
+  * [Secure a Database](#secure-a-database)
+  * [Deploy Documents](#deploy-documents)
+  * [Complete Bootstrap](#complete-bootstrap)
 * [User Management](#user-management)
   * [Creating Admin User](#creating-admin-user)
   * [Creating User](#creating-user)
@@ -69,9 +76,371 @@ update a document using an old revision the update will be in conflict. These
 conflicts should be resolved by your client, usually by requesting the newest
 version of the document, modifying and trying the update again. 
 
+## Bootstrap
+Bootstrap means in our case the preparation of the database in order to make it
+ready to run your project. In this process we configure CouchDB from a file
+which lives inside your project root, create the needed databases and deploy map
+functions and more, conveniently also from plain JavaScript files (or Erlang or
+Haskell or Ruby or whatever language you prefer for your views).
 
-## User Management
-### Creating Admin User
+In order to make this process as seemless as possible we have created
+[CouchDB Bootstrap](https://github.com/eHealthAfrica/couchdb-bootstrap). You can
+install it with npm:
+
+```sh
+$ npm install --global couchdb-bootstrap
+```
+
+CouchDB Bootstrap combines a set of small tools, which can be used
+independently. Each of those tools come has a similar API and is shipped with a
+CLI:
+
+* [couchdb-compile](https://github.com/jo/couchdb-compile) - Handle sources: fs mapping / JSON / CommonJS
+* [couchdb-configure](https://github.com/eHealthAfrica/couchdb-configure) - Configure CouchDB
+* [couchdb-ensure](https://github.com/eHealthAfrica/couchdb-ensure) - Create database unless exists
+* [couchdb-secure](https://github.com/eHealthAfrica/couchdb-secure) - Secure databases: write security object
+* [couchdb-push](https://github.com/jo/couchdb-push) - Push documens: users, replications, design docs and normal documents
+
+Its best you install altogether right now:
+
+```sh
+$ npm install --global couchdb-bootstrap couchdb-compile couchdb-configure couchdb-ensure couchdb-push couchdb-secure
+```
+
+First we setup a couchdb folder inside your project:
+
+```sh
+couchdb
+├── ...
+└── ...
+```
+
+This folder is organized just like CouchDBs URLS: we have a `/_config` file (or
+folder, more about that below) and `_users`, `_replicator` and custom databases.
+
+### CouchDB Compile
+When we talk about compilation we mean the transformation of a folder into a
+document. Map functions for example need to be stored as strings in design
+documents. Design documents are just like normal documents with an id prefixed
+with `_design/`:
+
+```json
+{
+  "_id" "_design/myapp",
+  "views": {
+    "by-date": {
+      "map": "function(doc) { if ('date' in doc) emit(doc.date, null) }"
+    }
+  }
+}
+```
+
+You do not want to deal with the JSON encoding and want your view functions code
+checked into Git as *files*. Thats why the CouchDB Filesystem Mapping was
+invented. the idea is simple: Every key in the json document corresponds to a
+directory if the value is an object, otherwise to a file, which contents will
+make the value:
+
+```sh
+myapp
+├── _id             # contains `_design/myapp`
+└── views
+    └── by-date
+        └─── map.js # contains `function(doc) { if ('date' in doc) emit(doc.date, null) }`
+```
+
+We use [Couchdb Compile](https://github.com/jo/couchdb-compile) and run
+`couchdb-compile` on this directory to get a JSON from those files:
+
+```sh
+[myapp]$ couchdb-compile 
+{
+  "_id": "_design/myapp",
+  "views": {
+    "by-date": {
+      "map": "function(doc) {\n  if ('date' in doc) emit(doc.date, null)\n}"
+    }
+  }
+}
+```
+
+#### JSON Files
+
+Sometimes you don't want this excessive deep nested directory tree. You can
+abbreviate by using a JSON file. `couchdb-compile` will use the name of the
+file as key (without the `.json` extension) and take the contents of that as
+value. Lets place an `package.json` file to the `myapp` directory with the following content:
+
+```json
+{
+  "name": "My Shiny Application",
+  "version": "1.0.0",
+  "description": "My Shiny Application helps everybody to discover your brilliancy.",
+  "author": "Johannes J. Schmidt"
+}
+```
+
+When we compile the `myapp` directory again the `package.json` file gets included:
+
+```sh
+[myapp]$ couchdb-compile 
+{
+  "_id": "_design/myapp",
+  "views": {
+    "by-date": {
+      "map": "function(doc) {\n  if ('date' in doc) emit(doc.date, null)\n}"
+    }
+  },
+  "package": {
+    "name": "My Shiny Application",
+    "version": "1.0.0",
+    "description": "My Shiny Application helps everybody to discover your brilliancy.",
+    "author": "Johannes J. Schmidt"
+  }
+}
+```
+
+
+#### ID Derivation from Filename
+
+Thats great. You might argue about the duplicated information found both inside
+the id and in the filename. Thats why CouchDB Compile derives the `_id`
+property from the filename in case the id is not included in the final json. So
+lets change our directory to look like this:
+
+```sh
+_design
+└── myapp
+    ├── package.json
+    └── views
+        └── by-date
+            └─── map.js
+```
+
+The result is the same, but this time we have omitted the `_id` file.  Note
+that CouchDB Compile not only considers the filename but also checks the parent
+directory. If it is `_design` or `_local` and if so, prepends it, too.
+
+#### CommonJS Modules (AKA Node Modules)
+I hear everybody scream:
+
+_"How can I test my view? The view code even is no valid JavaScript at all!"_
+
+CommonJS modules to the rescue! Besides filesystem mapping and JSON CouchDB
+Compile also supports CommonJS modules. Consider the follwing files:
+
+```sh
+_design/
+└── myapp
+    ├── index.js
+    └── package.json
+    └── views
+        └── by-date.js
+
+```
+
+##### \_design/myapp/index.js
+Just like a normal node module we use an index.js file as an entry point to our
+document (you can also use an myapp.js file instead):
+
+```js
+exports.package = require('./package.json')
+exports.views = {
+  'by-date': require('./views/by-date')
+}
+```
+
+##### \_design/myapp/views/by-date.js
+Now everything is common js:
+
+```js
+exports.map = function(doc) {
+  if ('date' in doc) emit(doc.date, null)
+}
+```
+
+Again, we get the same result as before when we run `couchdb-compile`. This is
+the most flexible way to structure your files and also gives us testability,
+because the views are now plain CommonJS modules.
+
+
+### Configure CouchDB
+CouchDB not only exposes its configuration over HTTP, configuration settings can also be altered via HTTP.
+
+For example, you might want to enable CORS. For this you must change a bunch of
+settings. Write the following JSON to a `_config.json` file (or grab it from
+[couchdb-cors-config](https://github.com/jo/couchdb-cors-config)):
+
+```json
+{
+  "httpd": {
+    "enable_cors": true
+  },
+  "cors": {
+    "origins": "*",
+    "credentials": true,
+    "methods": [
+      "GET",
+      "PUT",
+      "POST",
+      "HEAD",
+      "DELETE"
+    ],
+    "headers": [
+      "accept",
+      "authorization",
+      "content-type",
+      "origin",
+      "referer",
+      "x-csrf-token"
+    ]
+  }
+}
+```
+
+We can now write that configuration with [CouchDB
+Configure](https://github.com/eHealthAfrica/couchdb-configure). The
+configuration will be used emmediatately - no restart required:
+
+```sh
+$ couchdb-configure http://localhost:5984 _config.json 
+{
+  "httpd/enable_cors": {
+    "ok": true,
+    "value": "true"
+  },
+  "cors/origins": {
+    "ok": true,
+    "value": "*"
+  },
+  "cors/credentials": {
+    "ok": true,
+    "value": "true"
+  },
+  "cors/methods": {
+    "ok": true,
+    "value": "GET,PUT,POST,HEAD,DELETE"
+  },
+  "cors/headers": {
+    "ok": true,
+    "value": "accept,authorization,content-type,origin,referer,x-csrf-token"
+  }
+}
+```
+
+CouchDB Configure uses CouchDB Compile under the hood so you have all the
+options to define your configuration as files, JSON or CommonJS module.
+
+### Create Databases
+You can create a database with [CouchDB
+Ensure](https://github.com/eHealthAfrica/couchdb-ensure):
+
+```sh
+$ couchdb-ensure http://localhost:5984/mydb
+{
+  "ok": true
+}
+```
+
+If it does already exist nothing happens.
+
+### Secure a Database
+CouchDB is *absolutely open by default*. That means everybody can write
+documents (except design documents) and everybody can read every document.
+
+This can be changed on a per database basis by altering the security object:
+
+> The security object consists of two compulsory elements, admins and members, which are used to specify the list of users and/or roles that have admin and members rights to the database respectively:
+
+>>    `members`: they can read all types of documents from the DB, and they can write (and edit) documents to the DB except for design documents.   
+>>    `admins`: they have all the privileges of members plus the privileges: write (and edit) design documents, add/remove database admins and members, set the database revisions limit and execute temporary views against the database. They can not create a database nor delete a database.
+
+From the [CouchDB
+documentation](http://docs.couchdb.org/en/latest/api/database/security.html).
+
+An simple security object looks like this:
+
+```json
+{
+  "admins": {
+    "names": [],
+    "roles": []
+  },
+  "members": {
+    "names": [],
+    "roles": [
+      "myapp-user"
+    ]
+  }
+}
+```
+
+Here, access is only permitted to database admins and users with the role `myapp-user`.
+
+Use [CouchDB Secure](https://github.com/eHealthAfrica/couchdb-secure) to alter
+the security object:
+
+```sh
+$ couchdb-secure _security.json
+{
+  "ok": true
+}
+```
+
+CouchDB Secure uses CouchDB Compile under the hood so you have all the options
+to define your security object as files, JSON or CommonJS module.
+
+
+### Deploy Documents
+[CouchDB Push](https://github.com/jo/couchdb-push) can be used to deploy
+documents, be it design documents, users, replications or ordinary documents to
+a CouchDB database. Under the hood CouchDB Compile is used, so the everything
+you have learned about compilation above is also valid here.
+
+```sh
+[myapp]$ couchdb-push http://localhost:5984/mydb
+{
+  "ok": true,
+  "id": "_design/myapp",
+  "rev": "1-e2dfeb85f19c981e311144a6105d7de8"
+}
+```
+
+### Complete Bootstrap
+Now you have all in place to understand [CouchDB
+Bootstrap](https://github.com/eHealthAfrica/couchdb-bootstrap).
+While CouchDB Push acts on document level, CouchDB Bootstrap acts on the server
+level. Here you can organize different databases, users, replications and
+configuration:
+
+```sh
+couchdb
+├── _config.json
+├── _replicator
+│   ├── setup-alice.json
+│   └── setup-bob.json
+├── _users
+│   ├── alice.json
+│   └── bob.json
+├── myapp-db
+│   ├── _design
+│   │   └── myapp.js
+│   ├── _security.json
+│   └── adoc.json
+├── myapp-alice-db
+│   └── _security.json
+└── myapp-bob-db
+    └── _security.json
+```
+
+The whole project can now be bootstrapped with
+
+```sh
+[couchdb]$ couchdb-bootstrap http://localhost:5984
+```
+
+
+# Admin User
 First thing to do is setup the user account
 
 * Go to [http://localhost:5984/_utils/](http://localhost:5984/_utils) in your web browser
