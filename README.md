@@ -256,9 +256,11 @@ exports.map = function(doc) {
 }
 ```
 
-Again, we get the same result as before when we run `couchdb-compile`. This is
-the most flexible way to structure your files and also gives us testability,
-because the views are now plain CommonJS modules.
+Again, we get the same result as before when we run `couchdb-compile --index`.
+Remember that we need to enable this feature with the `--index` flag.
+
+This is the most flexible way to structure your files and also gives us
+testability, because the views are now plain CommonJS modules.
 
 
 ### Configure CouchDB
