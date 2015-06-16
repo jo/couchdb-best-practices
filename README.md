@@ -224,7 +224,7 @@ I hear everybody scream:
 _"How can I test my view? The view code even is no valid JavaScript at all!"_
 
 CommonJS modules to the rescue! Besides filesystem mapping and JSON CouchDB
-Compile also supports CommonJS modules. Consider the follwing files:
+Compile also supports CommonJS modules. Consider the following files:
 
 ```sh
 _design/
@@ -299,7 +299,7 @@ settings. Write the following JSON to a `_config.json` file (or grab it from
 
 We can now write that configuration with [CouchDB
 Configure](https://github.com/eHealthAfrica/couchdb-configure). The
-configuration will be used emmediatately - no restart required:
+configuration will be used immediately - no restart required:
 
 ```sh
 $ couchdb-configure http://localhost:5984 _config.json 
@@ -357,7 +357,7 @@ This can be changed on a per database basis by altering the security object:
 From the [CouchDB
 documentation](http://docs.couchdb.org/en/latest/api/database/security.html).
 
-An simple security object looks like this:
+A simple security object looks like this:
 
 ```json
 {
@@ -573,8 +573,8 @@ or you can setup a daemon on the server.
 
 Its also possible to run a migration manually from a dev computer.
 
-Please take care of your migration function. It *must* recognice whether a doc
-already has been migrated, otherwise the migration is cought in a loop!
+Please take care of your migration function. It *must* recognize whether a doc
+already has been migrated, otherwise the migration is caught in a loop!
 
 
 ### Per Document Access Control
@@ -907,7 +907,7 @@ can write view code in your preferred editor and watch the results in real time.
 
 
 ### Testing Views
-Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a a simple
+Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a simple
 CouchDB design doc testing tool.
 
 ```js
@@ -995,7 +995,7 @@ Read more about [CommonJS modules in CouchDB](http://caolanmcmahon.com/posts/com
 
 
 ### View Collation
-View Collation basically just means the conzept to query data by ranges, thus
+View Collation basically just means the concept to query data by ranges, thus
 using `startkey` and `endkey`. In CouchDB keys does not necessarily be strings,
 they can be arbitrary JSON values. If thats the case we talk about _complex keys_.
 
@@ -1146,13 +1146,13 @@ Upto `group_level=7` (which is the same as `group=true`)
 }
 ```
 
-Combining this with key or range queries you can get all sort of fine graned stats.
+Combining this with key or range queries you can get all sort of fine grained stats.
 
 
 ### Naming Conventions For Views
 Naming convention for views, starting from the basic case of no reduce functions.
 Views are couples of arbitrary functions, and as such it is impossible to express
-their whole variety with a name, so i am just trying to cover the most common cases.
+their whole variety with a name, so I am just trying to cover the most common cases.
 
 #### No Reduce
 In the case of no reduce function, usually views are just meant to sort documents
@@ -1180,7 +1180,7 @@ Then, there is a sort option, e.g. `persons-with-address-by-createddate`:
 
 `with` and `by` clauses are both optional.
 
-Finally, there is an optional suffix that descibes whether the view emits the
+Finally, there is an optional suffix that describes whether the view emits the
 full document as a value, e.g. `persons-with-address-fulldoc`: 
 
 ```
@@ -1225,7 +1225,7 @@ The reduce part could be structured as follows:
 stats-on-patient-age-by-case-status
 ```
 
-The case above refers to builtin reduce functions, which should cover the wide
+The case above refers to built-in reduce functions, which should cover the wide
 majority of uses.
 
 
@@ -1266,7 +1266,7 @@ post a json:
 }
 ```
 
-The response includes a replication id (which can also be optained from
+The response includes a replication id (which can also be obtained from
 `_active_tasks`):
 
 ```json
@@ -1323,7 +1323,7 @@ look at the
 ## Deployment
 
 ### CouchDB Behind A Proxy
-Running CouchDB behind a proxy is recommended, eg. to handle ssl termination.
+Running CouchDB behind a proxy is recommended, e.g. to handle ssl termination.
 
 *Prefer subdomain over subdirectory*.  Nginx encodes urls on the way through.
 So, for example, if you request
@@ -1334,7 +1334,7 @@ We can configure this mad behaviour away (by [not appending a slash to the
 `proxy_pass`
 target](http://stackoverflow.com/questions/20496963/avoid-nginx-decoding-query-parameters-on-proxy-pass-equivalent-to-allowencodeds)).
 But there is no way to convince nginx not messing with the url when rewriting
-the proxy behind a subdirectory, eg
+the proxy behind a subdirectory, e.g.
 `http://my.couch.behind.nginx.com/_couchdb/mydb/foo%2Fbar`
 
 
@@ -1397,7 +1397,7 @@ with a `_deleted` property set to true:
 ```
 
 In either way the deleted document will stay in the database, even after
-compactation. (That way the deletion can be propagated to all replicas.)
+compaction. (That way the deletion can be propagated to all replicas.)
 Using the manual variant allows you to keep data, which might be useful for
 filtered replication or other purposes. Otherwise all properties will get removed
 except the plain stub:
