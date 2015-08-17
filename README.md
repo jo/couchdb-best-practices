@@ -99,7 +99,7 @@ CLI:
 * [couchdb-configure](https://github.com/eHealthAfrica/couchdb-configure) - Configure CouchDB
 * [couchdb-ensure](https://github.com/eHealthAfrica/couchdb-ensure) - Create database unless exists
 * [couchdb-secure](https://github.com/eHealthAfrica/couchdb-secure) - Secure databases: write security object
-* [couchdb-push](https://github.com/jo/couchdb-push) - Push documens: users, replications, design docs and normal documents
+* [couchdb-push](https://github.com/jo/couchdb-push) - Push documents: users, replications, design docs and normal documents
 
 Its best you install altogether right now:
 
