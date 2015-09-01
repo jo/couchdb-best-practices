@@ -126,7 +126,7 @@ that is prefixed with `_design/`:
 
 ```json
 {
-  "_id" "_design/myapp",
+  "_id": "_design/myapp",
   "views": {
     "by-date": {
       "map": "function(doc) { if ('date' in doc) emit(doc.date, null) }"
@@ -137,7 +137,7 @@ that is prefixed with `_design/`:
 
 You do not want to deal with the JSON encoding and want your view functions code
 checked into Git as *files*. Thats why the CouchDB Filesystem Mapping was
-invented. The idea is simple: every key in the json document corresponds to a
+invented. The idea is simple: every key in the JSON document corresponds to a
 directory if the value is an object, otherwise to a file, which contents will
 make the value:
 
@@ -202,7 +202,7 @@ When we compile the `myapp` directory again the `package.json` file gets include
 
 Thats great. You might argue about the duplicated information found both inside
 the id and in the filename. Thats why CouchDB Compile derives the `_id`
-property from the filename in case the id is not included in the final json. So
+property from the filename in case the id is not included in the final JSON. So
 lets change our directory to look like this:
 
 ```sh
@@ -1256,7 +1256,7 @@ Use `_replicator` database when in doubt.
 
 #### `_replicate` API endpoint
 When you use Futon you use the replicator endpoint. To initiate a replication
-post a json:
+post a JSON:
 
 ```json
 {
