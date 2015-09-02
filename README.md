@@ -807,14 +807,14 @@ Or How do I do SQL-like JOINs? Can I avoid them?
 CouchDB (and PouchDB) supports [linked
 documents](https://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Linked_documents).
 Use them to join two types of documents together, by simply adding an `_id` to the
-emitted value:
+emitted value in the map function :
 
 ```js
 // join artist data to albums
-function map(doc) {
-  if (doc._id.match(/^album:/) {
-    emit(doc._id, null)
-    emit(doc._id, { _id : doc.artistId })
+function(doc) {
+  if (doc._id.match('^album:*')) {
+    emit(doc._id, null);
+    emit(doc._id, { '_id' : doc.artistId });
   }
 }
 ```
@@ -837,7 +837,8 @@ And this is a result:
       "doc": {
         "_id": "album:hunkydory",
         "title": "Hunky Dory",
-        "year": 1971
+        "year": 1971,
+        "artistId": "artist:david-bowie"
       },
       "id": "album:hunkydory",
       "key": "album:hunkydory"
