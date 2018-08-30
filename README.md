@@ -84,7 +84,7 @@ functions and more, conveniently also from plain JavaScript files (or Erlang or
 Haskell or Ruby or whatever language you prefer for your views).
 
 In order to make this process as seemless as possible we have created
-[CouchDB Bootstrap](https://github.com/eHealthAfrica/couchdb-bootstrap). You can
+[CouchDB Bootstrap](https://github.com/jo/couchdb-bootstrap). You can
 install it with npm:
 
 ```sh
@@ -96,9 +96,9 @@ independently. Each of those tools come has a similar API and is shipped with a
 CLI:
 
 * [couchdb-compile](https://github.com/jo/couchdb-compile) - Handle sources: fs mapping / JSON / CommonJS
-* [couchdb-configure](https://github.com/eHealthAfrica/couchdb-configure) - Configure CouchDB
-* [couchdb-ensure](https://github.com/eHealthAfrica/couchdb-ensure) - Create database unless exists
-* [couchdb-secure](https://github.com/eHealthAfrica/couchdb-secure) - Secure databases: write security object
+* [couchdb-configure](https://github.com/jo/couchdb-configure) - Configure CouchDB
+* [couchdb-ensure](https://github.com/jo/couchdb-ensure) - Create database unless exists
+* [couchdb-secure](https://github.com/jo/couchdb-secure) - Secure databases: write security object
 * [couchdb-push](https://github.com/jo/couchdb-push) - Push documents: users, replications, design docs and normal documents
 
 Its best you install altogether right now:
@@ -298,7 +298,7 @@ settings. Write the following JSON to a `_config.json` file (or grab it from
 ```
 
 We can now write that configuration with [CouchDB
-Configure](https://github.com/eHealthAfrica/couchdb-configure). The
+Configure](https://github.com/jo/couchdb-configure). The
 configuration will be used immediately - no restart required:
 
 ```sh
@@ -332,7 +332,7 @@ options to define your configuration as files, JSON or CommonJS module.
 
 ### Create Databases
 You can create a database with [CouchDB
-Ensure](https://github.com/eHealthAfrica/couchdb-ensure):
+Ensure](https://github.com/jo/couchdb-ensure):
 
 ```sh
 $ couchdb-ensure http://localhost:5984/mydb
@@ -376,7 +376,7 @@ A simple security object looks like this:
 
 Here, access is only permitted to database admins and users with the role `myapp-user`.
 
-Use [CouchDB Secure](https://github.com/eHealthAfrica/couchdb-secure) to alter
+Use [CouchDB Secure](https://github.com/jo/couchdb-secure) to alter
 the security object:
 
 ```sh
@@ -407,7 +407,7 @@ you have learned about compilation above is also valid here.
 
 ### Complete Bootstrap
 Now you have all in place to understand [CouchDB
-Bootstrap](https://github.com/eHealthAfrica/couchdb-bootstrap).
+Bootstrap](https://github.com/jo/couchdb-bootstrap).
 While CouchDB Push acts on document level, CouchDB Bootstrap acts on the server
 level. Here you can organize different databases, users, replications and
 configuration:
@@ -564,7 +564,7 @@ Object](http://docs.couchdb.org/en/1.6.1/json-structure.html#security-object)
 
 
 ### Data Migrations
-Use [pouchdb-migrate](https://github.com/eHealthAfrica/pouchdb-migrate), a
+Use [pouchdb-migrate](https://github.com/jo/pouchdb-migrate), a
 PouchDB plugin to help with migrations.
 
 You can either run migration on startup (the plugin remembers if a replication has
@@ -907,7 +907,7 @@ can write view code in your preferred editor and watch the results in real time.
 
 
 ### Testing Views
-Use [couchdb-ddoc-test](https://github.com/eHealthAfrica/couchdb-ddoc-test), a simple
+Use [couchdb-ddoc-test](https://github.com/jo/couchdb-ddoc-test), a simple
 CouchDB design doc testing tool.
 
 ```js
@@ -1416,5 +1416,5 @@ except the plain stub:
 
 [eha]: http://ehealthafrica.org
 [TF]: https://www.die-tf.de
-[contributors]: https://github.com/eHealthAfrica/couchdb-best-practices/graphs/contributors
+[contributors]: https://github.com/jo/couchdb-best-practices/graphs/contributors
 [license]: https://www.apache.org/licenses/LICENSE-2.0.html
