@@ -713,7 +713,7 @@ Now write a map function like this:
 function(doc) {
   if (!doc._id.match(/^friendship:/)) return
   
-  var ids = doc._id.match(/person:([^:]*)/g)
+  var ids = doc._id.match(/person:[^:]*/g)
   var one = ids[0]
   var two = ids[1]
 
