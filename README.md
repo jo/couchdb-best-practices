@@ -863,7 +863,7 @@ Using linked documents can be a way to group together related data.
 
 
 ### Built-In Reduce Functions
-CouchDB has some build in reduce functions to accomplish common tasks. They are
+CouchDB has some built in reduce functions to accomplish common tasks. They are
 native and very performant. Choose them wherever possible.
 To use a built in reduce, insert the name string instead of the function code,
 eg
