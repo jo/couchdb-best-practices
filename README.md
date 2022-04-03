@@ -664,7 +664,7 @@ albums together, using start- and endkey:
 ```json
 {
   "include_docs": true,
-  "startkey": "artist:tom-waits",
+  "startkey": "artist:tom-waits:",
   "endkey": "artist:tom-waits:\ufff0"
 }
 ```
