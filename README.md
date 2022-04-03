@@ -564,6 +564,8 @@ Object](http://docs.couchdb.org/en/1.6.1/json-structure.html#security-object)
 
 
 ### Data Migrations
+@mdumke and me (@jo) have written a comprehensive guide on [Distributed Migration Strategies](https://sync-tank.com/distributed-migration-strategies/). Worth to check out.
+
 Use [pouchdb-migrate](https://github.com/jo/pouchdb-migrate), a
 PouchDB plugin to help with migrations.
 
