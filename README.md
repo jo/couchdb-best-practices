@@ -580,10 +580,11 @@ already has been migrated, otherwise the migration is caught in a loop!
 
 
 ### Per Document Access Control
-There is no way to [control access on a per document
-level](https://wiki.apache.org/couchdb/PerDocumentAuthorization).
+There is no way to [control document-level
+access](https://github.com/apache/couchdb/issues/1524) yet, but it is in the
+works.
 
-A common solution is to have a database per user.  
+In the meantime, a common solution is to have a database per user.
 
 To create the dbs, you need to install a daemon. There are different projects:
 
